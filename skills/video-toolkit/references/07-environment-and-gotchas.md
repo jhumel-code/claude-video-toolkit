@@ -1,0 +1,62 @@
+# 07 · Environment & Gotchas
+
+## WSL setup (one-time, the `demo` user)
+
+VHS renders via headless Chromium which **refuses to run as root** → everything
+runs as a non-root user (`demo`). Installed in WSL Ubuntu:
+- `vhs` (charmbracelet) + `ttyd` in `/usr/local/bin`
+- `ffmpeg` + chromium shared libs (apt)
+- assets under `/home/demo/demo/` (binaries, demo repos, tapes)
+- (for Claude-session recording) Node 20 + `@anthropic-ai/claude-code` — see
+  [03-recording-claude-sessions](03-recording-claude-sessions.md).
+
+Render command shape:
+```bash
+wsl.exe -u demo bash -s <<'EOF'
+cd /home/demo/demo && vhs mytape.tape
+EOF
+```
+
+## Gotchas (each one cost real time)
+
+### WSL / VHS
+- **Windows VHS hangs** (never spawns ttyd). WSL only. Don't retry Windows.
+- **`wsl.exe` mangles `$` in arguments** (re-parses argv through a shell). Pass
+  scripts via a **quoted stdin heredoc** (`wsl bash -s <<'EOF' … EOF`), never inline
+  `$` in `wsl bash -c '...'`. (A big Windows `$PATH` with spaces/parens also breaks
+  inline commands → use the heredoc.)
+- **Always absolute `/home/demo/demo/` paths, never `~`** — the default wsl user's
+  home differs, so `~` silently lands files in the wrong place.
+- **VHS `Output` must be a relative path** — an absolute path errors the parser.
+- **VHS overrides the prompt to `> `** — `Wait` patterns must match `^> ?$`, not `$`.
+- VHS renders ~12% faster than the typing+sleep arithmetic suggests — **never trust
+  the math**, pin beats from frames (`freezedetect` / contact sheets).
+
+### ffmpeg
+- **`-t` BEFORE `-i`** when freezing with `tpad` — `-t` after `-i` truncates the
+  freeze (clip ends short by exactly the freeze length).
+- **`drawtext` segfaults on Windows ffmpeg** (no fontconfig). Use WSL ffmpeg for
+  `drawtext`, or render text with Pillow instead.
+- **Center-anchored zoom on left-aligned terminal text "slides sideways"** — anchor
+  `x=0`. Zoom only sparse/static beats; dense scrolling text clips into the padding.
+
+### Audio
+- **You can't hear** — verify by durations + `silencedetect` gaps; human confirms tone.
+- **`requirements.txt` (and any file) must end with a trailing newline** or VHS
+  `Wait /^> ?$/` hangs (the prompt glues to the last line).
+- Multilingual TTS voices code-switch — see [06-voice-models](06-voice-models.md).
+
+### Files / determinism
+- **CRLF**: Windows tools may write CRLF; if a file is consumed by a LF-only tool,
+  convert. (In the Trustabl repo, `.gitattributes` forces `eol=lf` on `*.go`/`*.md`.)
+- **Live VHS render timing is non-deterministic** (sandbox/AI latency varies → every
+  beat shifts). Re-pin beats every render; **freeze result frames** so they can't drift.
+- **Vision subagents hallucinate** on long runs of near-identical terminal frames —
+  verify load-bearing frames yourself by seeking (25 fps CFR mp4s seek reliably).
+
+## Where things live (on the build machine)
+
+- Working dir: any folder you choose (set `WORKDIR`), holding `vo/` (scripts) + `fonts/`.
+- Finished videos: your chosen output dir (set `OUT_DIR`).
+- WSL render assets: `/home/demo/demo/`.
+- Brand assets: the Trustabl engine repo `assets/` (see [brand.md](brand.md)).

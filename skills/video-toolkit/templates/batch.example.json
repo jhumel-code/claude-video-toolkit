@@ -1,0 +1,21 @@
+[
+  {"tape":"tb03.tape","out":"f03-agentscan","beats":[
+    ["./trustabl scan claude-sdk-examples 2>/dev/null | sed -n '/Scan summary/,/^Findings/p'", 13],
+    ["./trustabl scan claude-sdk-examples 2>/dev/null | grep -E 'HIGH|CRIT'", 12]]},
+  {"tape":"tb04.tape","out":"f04-acac","beats":[
+    ["./trustabl generate agent-yaml claude-sdk-examples --agent tester --out tester.agf.yaml --openshell-policy tester.policy.yaml", 4],
+    ["sed -n '/^x-trustabl/,$p' tester.agf.yaml | head -22", 14],
+    ["cat tester.policy.yaml", 15]]},
+  {"tape":"tb05.tape","out":"f05-sarif","beats":[
+    ["./trustabl scan claude-sdk-examples --format sarif -o trustabl.sarif 2>/dev/null; echo wrote trustabl.sarif", 4],
+    ["head -28 trustabl.sarif", 13]]},
+  {"tape":"tb06.tape","out":"f06-sbom","beats":[
+    ["./trustabl scan vuln-demo --vuln-scan --bom-out bom.json 2>/dev/null > /dev/null; echo wrote bom.json", 4],
+    ["head -34 bom.json", 13]]},
+  {"tape":"tb07.tape","out":"f07-network","beats":[
+    ["cat ops-agent/main.py", 14],
+    ["./trustabl generate agent-yaml ./ops-agent --openshell-policy oncall.policy.yaml", 4],
+    ["sed -n '/^network_policies/,$p' oncall.policy.yaml | head -22", 14]]},
+  {"tape":"tb08.tape","out":"f08-scoring","beats":[
+    ["./trustabl scan claude-sdk-examples 2>/dev/null | sed -n '/Surface readiness/,/^Findings/p'", 15]]}
+]

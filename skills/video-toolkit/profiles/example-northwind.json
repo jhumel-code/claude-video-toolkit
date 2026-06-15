@@ -1,0 +1,26 @@
+{
+  "name": "Northwind",
+  "wordmark": "Northwind",
+  "tagline": "Ship with confidence",
+  "pills": ["Build", "Test", "Ship", "Scale"],
+  "logo": "assets/logo.png",
+  "fonts_dir": "fonts",
+  "font_family": "Poppins",
+  "palette": {
+    "accent":    [233, 161, 66],
+    "accent_hi": [255, 212, 150],
+    "bg_deep":   [12, 9, 5],
+    "bg_lift":   [40, 28, 12],
+    "text":      [250, 248, 244],
+    "subtext":   [184, 172, 150]
+  },
+  "grade": {
+    "curves_r": "0/0 0.5/0.54 1/1",
+    "curves_g": "0/0 0.5/0.5 1/1",
+    "curves_b": "0/0 0.5/0.46 1/1",
+    "eq": "contrast=1.06:brightness=-0.01:saturation=1.02",
+    "colorbalance": "rs=0.05:rh=0.03"
+  },
+  "voice": "en-US-AvaNeural",
+  "pronounce": {}
+}

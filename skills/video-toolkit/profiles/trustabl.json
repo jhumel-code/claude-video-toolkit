@@ -1,0 +1,26 @@
+{
+  "name": "Trustabl",
+  "wordmark": "Trustabl",
+  "tagline": "Static analysis for AI agents",
+  "pills": ["Scan", "Detect", "Score", "Fix hints", "JSON/SARIF"],
+  "logo": "assets/logo.png",
+  "fonts_dir": "fonts",
+  "font_family": "Poppins",
+  "palette": {
+    "accent":    [81, 193, 181],
+    "accent_hi": [150, 235, 220],
+    "bg_deep":   [0, 9, 15],
+    "bg_lift":   [2, 33, 40],
+    "text":      [247, 249, 247],
+    "subtext":   [150, 166, 178]
+  },
+  "grade": {
+    "curves_r": "0/0 0.5/0.48 1/1",
+    "curves_g": "0/0 0.5/0.51 1/1",
+    "curves_b": "0/0 0.5/0.56 1/1",
+    "eq": "contrast=1.06:brightness=-0.02:saturation=0.92",
+    "colorbalance": "bs=0.05:bh=0.03"
+  },
+  "voice": "en-US-AvaNeural",
+  "pronounce": { "Trustabl": "Trust-abl" }
+}
