@@ -12,6 +12,50 @@ on-brand video for any product. Trustabl ships as the worked example profile.
 
 (No agents or MCP servers — the pipeline runs through Bash + the bundled scripts.)
 
+## Install in Claude Code
+This repo is a Claude Code plugin **and** its own plugin marketplace, so you can
+install it straight from the repo. Run these inside a Claude Code session:
+
+1. Add the marketplace (points Claude Code at this repo):
+   ```
+   /plugin marketplace add jhumel-code/claude-video-toolkit
+   ```
+2. Install the plugin:
+   ```
+   /plugin install claude-video-toolkit@jhumel-code
+   ```
+   Here `claude-video-toolkit` is the **plugin** and `jhumel-code` is the
+   **marketplace** name (they're separate identifiers).
+3. If it doesn't activate right away, reload:
+   ```
+   /reload-plugins
+   ```
+
+Prefer a menu? Run `/plugin`, open **Marketplaces** and add
+`jhumel-code/claude-video-toolkit`, then open **Discover** and install
+**claude-video-toolkit**. Manage or remove it later with `/plugin` (or
+`/plugin uninstall claude-video-toolkit@jhumel-code`).
+
+> Installing the plugin gives Claude Code the `video-toolkit` skill. You still
+> need the runtime tools below for renders to actually run.
+
+### Team / non-interactive setup
+Commit this to the project's `.claude/settings.json` to register the marketplace
+and enable the plugin automatically (applied on the next session once the repo is
+trusted):
+```json
+{
+  "extraKnownMarketplaces": {
+    "jhumel-code": {
+      "source": { "source": "github", "repo": "jhumel-code/claude-video-toolkit" }
+    }
+  },
+  "enabledPlugins": {
+    "claude-video-toolkit@jhumel-code": true
+  }
+}
+```
+
 ## Setup / prerequisites
 - **WSL Ubuntu** with `vhs` + `ttyd` + chromium libs (terminal recording only;
   brand intros/banners + finishing don't need it). Record as a non-root `demo` user.

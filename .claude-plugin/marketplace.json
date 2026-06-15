@@ -1,0 +1,25 @@
+{
+  "name": "jhumel-code",
+  "owner": {
+    "name": "Ian Jhumel Bautista"
+  },
+  "description": "Personal Claude Code plugin marketplace.",
+  "plugins": [
+    {
+      "name": "claude-video-toolkit",
+      "source": "./",
+      "description": "Produce brand intros, animated banners, and narrated terminal/CLI demo videos from the command line — deterministic, free (no paid tools), and brand-agnostic via JSON brand profiles.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "video",
+        "marketing",
+        "demo",
+        "motion-graphics",
+        "ffmpeg",
+        "vhs",
+        "brand"
+      ]
+    }
+  ]
+}
