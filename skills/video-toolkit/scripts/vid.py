@@ -39,7 +39,7 @@ for i,b in enumerate(spec["beats"]):
     b_at=round(cum+0.1,3); clips.append(outB); auds.append((bMp3,b_at)); cum+=dur(outB)
     meta.append({"id":f"b{i}b","kind":"result","narr_start_s":b_at,"narr_text":b["b"],
                  "beat_end_s":round(cum,3),"jargon":_jarg(b["b"]),"expected_onscreen":b.get("expect",[]),
-                 "scroll_top":b.get("scroll_top",[])})
+                 "scroll_top":b.get("scroll_top",[]),"play_b":bool(b.get("play_b"))})
 json.dump({"beats":meta}, open(OUTDIR+f"{name}.beats.json","w"), ensure_ascii=False, indent=1)
 
 with open(f"{TMP}/list.txt","w") as fp:

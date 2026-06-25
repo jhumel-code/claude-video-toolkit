@@ -44,10 +44,13 @@ def main():
                 issues.append(f"drift=+{round(hstart - start, 1)}s")
             if hend - nxt > OVERRUN:
                 issues.append(f"overrun=+{round(hend - nxt, 1)}s")
-            for a, b in zip(win, win[1:]):
-                if b["s"] - a["e"] > DEADAIR:
-                    issues.append(f"dead_air={round(b['s'] - a['e'], 1)}s")
-                    break
+            # dead air only matters on a STATIC beat. On a scroll/play-through beat the screen
+            # is moving during any silence, so a silent stretch there is intended, not dead air.
+            if not beat.get("play_b"):
+                for a, b in zip(win, win[1:]):
+                    if b["s"] - a["e"] > DEADAIR:
+                        issues.append(f"dead_air={round(b['s'] - a['e'], 1)}s")
+                        break
         elif norm(beat.get("narr_text", "")):
             issues.append("no_speech_in_window")
         ratio = SequenceMatcher(None, norm(heard), norm(beat.get("narr_text", ""))).ratio()
