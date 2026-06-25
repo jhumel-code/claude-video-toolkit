@@ -1,5 +1,12 @@
 import subprocess, os, sys, json
-# vid.py <spec.json>  -> trustabl-<name>.mp4  (two-phase pacing: command typed under intent line, result under explanation)
+# vid.py <spec.json>  -> <name>.mp4  (two-phase pacing: command typed under intent line, result under explanation)
+# Also emits <name>.beats.json (the sidecar scripts/review.sh keys off to self-review the render),
+# and applies profiles/pronounce.json to narration before edge-tts (jargon pronunciation).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from pronounce import normalize as _pron, jargon_in as _jarg
+except Exception:
+    _pron = lambda t: t; _jarg = lambda t: []
 spec = json.load(open(sys.argv[1], encoding="utf-8"))
 name = spec["name"]
 base = os.environ.get("WORKDIR", ".").rstrip("/") + "/"
@@ -9,13 +16,13 @@ OUTDIR = spec.get("outdir", base)
 TMP  = base + f"_v_{name}"; os.makedirs(TMP, exist_ok=True)
 GAP  = 0.4
 def dur(p): return float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",p]).decode().strip())
-def tts(text,out): subprocess.run(["python","-m","edge_tts","--voice",V,"--text",text,"--write-media",out],check=True)
+def tts(text,out): subprocess.run(["python","-m","edge_tts","--voice",V,"--text",_pron(text),"--write-media",out],check=True)
 def seg(bt,src_len,freeze,out):
     vf = f"tpad=stop_mode=clone:stop_duration={freeze}" if freeze>0.02 else "null"
     subprocess.run(["ffmpeg","-v","error","-ss",f"{bt}","-t",f"{src_len}","-i",SRC,"-an","-vf",vf,"-r","25",
         "-c:v","libx264","-crf","18","-preset","medium","-pix_fmt","yuv420p","-y",out],check=True)
 
-clips=[]; auds=[]; cum=0.0
+clips=[]; auds=[]; cum=0.0; meta=[]
 for i,b in enumerate(spec["beats"]):
     ts=float(b["ts"]); res=float(b["res"])
     aMp3=f"{TMP}/{i}a.mp3"; bMp3=f"{TMP}/{i}b.mp3"
@@ -23,10 +30,17 @@ for i,b in enumerate(spec["beats"]):
     ldA=dur(aMp3); ldB=dur(bMp3)
     aclip=ldA+GAP; avail=(res-0.1)-ts; src_a=max(0.4,min(aclip,avail))
     outA=f"{TMP}/{i}a.mp4"; seg(ts,src_a,round(aclip-src_a,3),outA)
-    clips.append(outA); auds.append((aMp3,round(cum+0.1,3))); cum+=aclip
+    # audio at the ACTUAL measured clip boundary so narration can never drift from video
+    a_at=round(cum+0.1,3); clips.append(outA); auds.append((aMp3,a_at)); cum+=dur(outA)
+    meta.append({"id":f"b{i}a","kind":"intent","narr_start_s":a_at,"narr_text":b["a"],
+                 "beat_end_s":round(cum,3),"jargon":_jarg(b["a"]),"expected_onscreen":b.get("expect_a",[])})
     bclip=ldB+GAP; src_b=max(0.4,min(bclip,1.5))
     outB=f"{TMP}/{i}b.mp4"; seg(res,src_b,round(bclip-src_b,3),outB)
-    clips.append(outB); auds.append((bMp3,round(cum+0.1,3))); cum+=bclip
+    b_at=round(cum+0.1,3); clips.append(outB); auds.append((bMp3,b_at)); cum+=dur(outB)
+    meta.append({"id":f"b{i}b","kind":"result","narr_start_s":b_at,"narr_text":b["b"],
+                 "beat_end_s":round(cum,3),"jargon":_jarg(b["b"]),"expected_onscreen":b.get("expect",[]),
+                 "scroll_top":b.get("scroll_top",[])})
+json.dump({"beats":meta}, open(OUTDIR+f"{name}.beats.json","w"), ensure_ascii=False, indent=1)
 
 with open(f"{TMP}/list.txt","w") as fp:
     for c in clips: fp.write(f"file '{c}'\n")

@@ -96,10 +96,20 @@ VHS drives `claude` in WSL; `session_vid.py` re-paces the take. Detail:
 `references/03-recording-claude-sessions.md`.
 
 ## Verification discipline
-Extract and view key frames; check audio via `silencedetect` + clip durations; have the
-human confirm tone/pronunciation. Run `finish.sh` as the last step.
+**After every render, run `scripts/review.sh <render.mp4>` and gate on its exit code (0 PASS,
+1 FAIL, 2 no-sidecar) before declaring the video done.** It self-reviews the render WITHOUT a
+human: narration-to-visual sync, spillover/double-voice, dead air, loudness/clipping, and
+on-screen text (Tesseract OCR), all keyed off the `<name>.beats.json` sidecar the builders
+(`vid.py`/`session_vid.py`) emit. On PASS it prints one line; on FAIL, one line per failing
+beat. This catches the bugs frame-grabbing misses (audio drifting from its visual, a narration
+spilling onto the next section). Builders also apply `profiles/pronounce.json` to narration
+before edge-tts to fix jargon pronunciation (edge-tts has no phoneme control). A `pron_suspect`
+NOTE still warrants a ~5s human spot-listen - ASR cannot truly hear pronunciation. One-time WSL
+setup and full detail: `references/12-self-review.md`. Run `finish.sh` last, and only after
+`review.sh` passes on the body.
 
 ## References
 `references/`: 01 pipeline · 02 terminal-demo-factory · 03 recording-claude-sessions ·
 04 brand-intro-and-banner · 05 sound-design · 06 voice-models · 07 environment-and-gotchas ·
-08 research-report · 09 improvement-plan · 10 style-guide · 11 brand-profiles · brand.md.
+08 research-report · 09 improvement-plan · 10 style-guide · 11 brand-profiles ·
+12 self-review · brand.md.

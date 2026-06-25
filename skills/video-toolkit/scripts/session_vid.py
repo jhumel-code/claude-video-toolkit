@@ -1,6 +1,12 @@
-import subprocess, os
+import subprocess, os, sys, json
 # session_vid.py -> narrated re-pace of a real Claude Code session (full.mp4)
 # speed-fit "action" spans, freeze-hold on result frames; Ava (english-locked) VO.
+# Emits <out>.beats.json for scripts/review.sh and applies profiles/pronounce.json to narration.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from pronounce import normalize as _pron, jargon_in as _jarg
+except Exception:
+    _pron = lambda t: t; _jarg = lambda t: []
 base = os.environ.get("WORKDIR", ".").rstrip("/") + "/"
 SRC  = base + "plugin-demo/full.mp4"
 V    = "en-US-AvaNeural"
@@ -29,12 +35,13 @@ SCENES = [
 ]
 
 def dur(p): return float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",p]).decode().strip())
-def tts(text,out): subprocess.run(["python","-m","edge_tts","--voice",V,"--text",text,"--write-media",out],check=True)
+def tts(text,out): subprocess.run(["python","-m","edge_tts","--voice",V,"--text",_pron(text),"--write-media",out],check=True)
 
-clips=[]; auds=[]; cum=0.0
+clips=[]; auds=[]; cum=0.0; meta=[]
 for i,s in enumerate(SCENES):
     mp3=f"{TMP}/{i}.mp3"; tts(s["t"],mp3); ld=dur(mp3)
     seg=round(ld+GAP,3)                       # scene video length == audio slot
+    at=round(cum+0.1,3)
     out=f"{TMP}/{i}.mp4"
     if s["mode"]=="freeze":
         png=f"{TMP}/{i}.png"
@@ -45,8 +52,11 @@ for i,s in enumerate(SCENES):
         L=s["out"]-s["in"]; f=round(seg/L,5)   # stretch [in,out] to fill seg
         subprocess.run(["ffmpeg","-v","error","-ss",str(s["in"]),"-to",str(s["out"]),"-i",SRC,
             "-vf",f"setpts={f}*PTS,fps=25","-an","-c:v","libx264","-crf","18","-preset","medium","-pix_fmt","yuv420p","-y",out],check=True)
-    clips.append(out); auds.append((mp3,round(cum+0.1,3))); cum+=seg
+    clips.append(out); auds.append((mp3,at)); cum+=seg
+    meta.append({"id":f"s{i}","kind":"result","narr_start_s":at,"narr_text":s["t"],
+                 "beat_end_s":round(cum,3),"jargon":_jarg(s["t"]),"expected_onscreen":s.get("expect",[])})
 
+json.dump({"beats":meta}, open(OUT.replace(".mp4",".beats.json"),"w"), ensure_ascii=False, indent=1)
 with open(f"{TMP}/list.txt","w") as fp:
     for c in clips: fp.write(f"file '{c}'\n")
 silent=f"{TMP}/silent.mp4"
