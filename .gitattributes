@@ -1,0 +1,5 @@
+# Shell scripts and the python/json the WSL pipeline runs MUST stay LF, or bash/source breaks.
+*.sh   text eol=lf
+*.py   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
