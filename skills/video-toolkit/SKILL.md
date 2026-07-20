@@ -112,4 +112,24 @@ setup and full detail: `references/12-self-review.md`. Run `finish.sh` last, and
 `references/`: 01 pipeline · 02 terminal-demo-factory · 03 recording-claude-sessions ·
 04 brand-intro-and-banner · 05 sound-design · 06 voice-models · 07 environment-and-gotchas ·
 08 research-report · 09 improvement-plan · 10 style-guide · 11 brand-profiles ·
-12 self-review · brand.md.
+12 self-review · 13 remotion-diagrams · brand.md.
+
+## Two engines
+- **Pillow + VHS + ffmpeg** (the bulk of this skill): zero extra deps, $0 — the default
+  for terminal/CLI demos and the fallback for everything.
+- **Remotion** (`references/13-remotion-diagrams.md`, `templates/remotion-diagrams/`):
+  React→video for editorial **animated diagram explainers** — adopts the diagram-design
+  language (Instrument Serif + Geist, accent-tint focal nodes) with native animation,
+  slide transitions, and banding-free CSS backgrounds. Remotion is free only for
+  ≤3-employee for-profits (else ~$75/mo); the Pillow path stays the $0 fallback.
+
+## Default template
+`templates/remotion-diagrams/` is the **default starting point for any brand/product
+explainer video**. The shipped specs are the Trustabl Artifacts Explainer — the house
+reference implementation: an overview intro section that EXPLAINS what the video is for
+(never a bare logo sting), the navy `src/brand.ts` tokens, Instrument Serif + Geist,
+one accent-tint focal node per figure, and `slide()` transitions between sections
+(`fade()` superimposes same-position headers — bookend edges only). Re-map `brand.ts`
+to restyle for another brand. Improve this template over time rather than forking it
+ad hoc, and add new templates beside it (`templates/<name>/`) for new video shapes and
+new products.
