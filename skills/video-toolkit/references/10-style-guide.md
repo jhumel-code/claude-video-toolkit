@@ -95,7 +95,7 @@ Set Theme { "name":"Trustabl","background":"#0D1B2A","foreground":"#E8EBF0",\
 
 ## 8. Sound spec
 
-- **Voice:** `en-US-AvaNeural` (English-locked) — never `*MultilingualNeural`. Pronounce coined words by **respelling the TTS input** ("Trust-abl"); keep on-screen text correct. Pauses = ffmpeg silence between clips, not SSML (SSML is blocked; only rate/pitch/volume work). Presenter cadence ≈ `--rate=+8% --pitch=-3Hz`; emphasis lines `--rate=-10% --pitch=-6Hz`.
+- **Voice:** `en-US-AvaNeural` (English-locked) — never `*MultilingualNeural`. Pronounce coined words by **respelling the TTS input** ("Trustable"); keep on-screen text correct. Pauses = ffmpeg silence between clips, not SSML (SSML is blocked; only rate/pitch/volume work). Presenter cadence ≈ `--rate=+8% --pitch=-3Hz`; emphasis lines `--rate=-10% --pitch=-6Hz`.
 - **Music beds:** warm pads via stacked-harmonic `aevalsrc` + `lowpass` + attack/release envelope; risers/blips via SoX `pl`. Bed under VO at −18dB vs voice. No lyrics.
 - **Mastering:** music bed `loudnorm I=-15:TP=-1.5`; under-VO bed `I=-17`. Findings reveal = one short confirmation ping (CI-green-check feel).
 - **You are the ear:** verify by clip durations + `silencedetect`; human confirms tone.

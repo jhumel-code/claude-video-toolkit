@@ -21,7 +21,7 @@ your own brand, see [`11-brand-profiles.md`](11-brand-profiles.md).
                "text":[247,249,247], "subtext":[150,166,178] },
   "grade": { ... },                    // finish.sh color grade (see docs/11)
   "voice": "en-US-AvaNeural",
-  "pronounce": { "Trustabl": "Trust-abl" }
+  "pronounce": { "Trustabl": "Trustable" }
 }
 ```
 

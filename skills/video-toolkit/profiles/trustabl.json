@@ -22,5 +22,5 @@
     "colorbalance": "bs=0.05:bh=0.03"
   },
   "voice": "en-US-AvaNeural",
-  "pronounce": { "Trustabl": "Trust-abl" }
+  "pronounce": { "Trustabl": "Trustable" }
 }

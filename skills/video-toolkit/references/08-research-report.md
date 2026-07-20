@@ -58,7 +58,7 @@ The dominant aesthetic is "Linear-style dark premium": cool near-black backgroun
 
 **The unifying architecture:** an LLM acts as *director*, emitting a `spec.json` (scenes, narration, timings, beds, captions); the deterministic Python/ffmpeg pipeline *renders* it. This turns each bespoke video into a data-driven render and is the cleanest way to make intro + demo "one system." A schema is in the style guide.
 
-**edge-tts reality check (verified):** Microsoft blocks custom SSML — only `--rate`, `--pitch`, `--volume` work. No `<break>`, `<emphasis>`, `<say-as>`, or `<phoneme>`. Consequences: insert pauses as **ffmpeg silence between clips**, not in TTS; and pronounce coined words like **"Trustabl" by respelling the input text** (test "Trust-abl"/"Trustable" and check clip duration — the human is the ear). Use `--write-subtitles` to get word-boundary timings for free, accurate captions.
+**edge-tts reality check (verified):** Microsoft blocks custom SSML — only `--rate`, `--pitch`, `--volume` work. No `<break>`, `<emphasis>`, `<say-as>`, or `<phoneme>`. Consequences: insert pauses as **ffmpeg silence between clips**, not in TTS; and pronounce coined words like **"Trustabl" by respelling the input text** (verified: "Trustable" reads naturally; "Trust-abl" makes AvaNeural spell out A-B-L — the human is the ear). Use `--write-subtitles` to get word-boundary timings for free, accurate captions.
 
 **Richer free, deterministic sound** beyond our current sine chords: stack harmonics through `aevalsrc` + `lowpass` with attack/release envelopes for warm pads; use SoX's `pl` (Karplus-Strong plucked-string) for natural risers and UI blips; and Csound for programmable chord progressions generated from the spec. All are CLI-scriptable and byte-deterministic.
 

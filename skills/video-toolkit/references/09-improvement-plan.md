@@ -95,7 +95,7 @@ Everything here stays free, CLI, and deterministic.
 ### 10. edge-tts pronunciation, pacing & free captions
 - **Why:** SSML is blocked; "Trustabl" mispronounces; pauses can't be authored in TTS. Fix at the pipeline level.
 - **File:** `vid.py` / narration step.
-- **How:** respell coined words in the TTS input only ("Trust-abl" — keep on-screen text correct); add pauses as ffmpeg silence between clips (`aevalsrc=0:d=0.4`); per-emphasis line, render that clip with `--rate=-10% --pitch=-6Hz`; generate captions from `edge-tts --write-subtitles` word boundaries → ASS.
+- **How:** respell coined words in the TTS input only ("Trustable" — keep on-screen text correct); add pauses as ffmpeg silence between clips (`aevalsrc=0:d=0.4`); per-emphasis line, render that clip with `--rate=-10% --pitch=-6Hz`; generate captions from `edge-tts --write-subtitles` word boundaries → ASS.
 - **Effort:** M · **Impact:** M
 
 ---

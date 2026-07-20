@@ -29,7 +29,16 @@
     "CVE": "C V E",
     "MCP": "M C P",
     "CI/CD": "C-I-C-D",
+    "CI": "C I",
     "API": "A P I",
-    "CLI": "C L I"
+    "CLI": "C L I",
+    "CNCF": "C N C F",
+    "NIST": "N I S T",
+    "PCI": "P C I",
+    "OWASP": "Oh-wasp",
+    "Seccomp": "Seck-comp",
+    "Cedar": "Cedar",
+    "EU": "E U",
+    "ISO": "I S O"
   }
 }
