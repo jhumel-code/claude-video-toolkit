@@ -15,11 +15,11 @@
     "subtext":   [150, 166, 178]
   },
   "grade": {
-    "curves_r": "0/0 0.5/0.48 1/1",
-    "curves_g": "0/0 0.5/0.51 1/1",
-    "curves_b": "0/0 0.5/0.56 1/1",
-    "eq": "contrast=1.06:brightness=-0.02:saturation=0.92",
-    "colorbalance": "bs=0.05:bh=0.03"
+    "curves_r": "0/0 0.5/0.54 1/1",
+    "curves_g": "0/0 0.5/0.55 1/1",
+    "curves_b": "0/0 0.5/0.6 1/1",
+    "eq": "contrast=1.02:brightness=0.04:saturation=1.0",
+    "colorbalance": "bs=0.04:bh=0.02"
   },
   "voice": "en-US-AvaNeural",
   "pronounce": { "Trustabl": "Trustable" }
