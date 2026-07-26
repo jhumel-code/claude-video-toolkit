@@ -1,7 +1,7 @@
 {
-  "name": "hello-world",
-  "version": "1.0.0",
-  "description": "Minimal hello-world video — renders in 2 minutes, zero API keys",
+  "name": "remotion-diagrams-slipstream",
+  "version": "2.0.0",
+  "description": "Remotion diagram-explainer template, codename Slipstream (v2)",
   "scripts": {
     "studio": "npx remotion studio",
     "render": "npx remotion render src/index.ts SprintReview out/video.mp4",

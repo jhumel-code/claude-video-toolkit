@@ -7,6 +7,7 @@ import { fade } from '@remotion/transitions/fade';
 import { Section, secFrames } from './Section';
 import { Intro, Outro, IntroSound, IntroA, IntroB, IntroC, introFrames, outroFrames, introSoundFrames } from './Bookends';
 import { SPECS } from './specs';
+import { Spof, spofFrames } from './Spof';
 import { FPS, CW, CH } from './brand';
 
 const XF = 22; // slide-transition frames between sections (no same-position header overlap)
@@ -43,6 +44,7 @@ const TOTAL = ITEMS.reduce((a, it) => a + it.dur, 0) - XF * (ITEMS.length - 1);
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="Explainer" component={Explainer} durationInFrames={TOTAL} fps={FPS} width={CW} height={CH} />
+    <Composition id="Spof" component={Spof} durationInFrames={spofFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="Intro" component={Intro} durationInFrames={introFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="Outro" component={Outro} durationInFrames={outroFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="IntroSound" component={IntroSound} durationInFrames={introSoundFrames} fps={FPS} width={CW} height={CH} />

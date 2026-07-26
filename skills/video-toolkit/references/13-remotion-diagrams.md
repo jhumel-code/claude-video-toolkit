@@ -32,6 +32,33 @@ See `templates/remotion-diagrams/README.md`. In short: drop narration mp3s in
 `public/audio/`, edit `src/specs.tsx`, `npx remotion studio` to preview,
 `npx remotion render src/index.ts Explainer out/explainer.mp4`.
 
+## Template codenames
+The template is versioned by codename + git tag; the directory at HEAD is the
+default. **Slipstream (v2, default)** = everything below (`template/slipstream-v2`).
+**Harbor (v1)** = the reveal-only Section/spec model before the network primitives
+(`template/harbor-v1`).
+
+## Network primitives (Slipstream, 2026-07-26)
+`src/network.tsx` adds a second, **stateful** visual language for network/topology
+explainers (content styling borrowed from the social "single point of failure"
+format, rendered in the system's own 16:9 canvas): curved **`FlowEdge`** bezier
+edges with particles riding them, **`RingNode`** hubs and **`AppNode`** endpoints
+that flip `live → down` mid-scene, **`StatCard`** / **`TagPill`** / timed
+**`CaptionPill`** (subtitle beats). `Header` gained `titleParts` (two-tone title)
+and `sub`. Unlike the Section/spec model (reveal-only), these components take a
+`states`/`items` **timeline in seconds from the enclosing Sequence start**, so a
+node can fail, recover, or re-route on the narration beat. `src/Spof.tsx` is the
+proving example (`Spof`, standard CW×CH canvas): three slides joined by the
+Explainer's slide/fade `TransitionSeries` — one shared edge failing (everything
+OFFLINE), a second independent path keeping the apps LIVE, then a closing card.
+Beat times derive from the measured narration clip durations
+(`public/audio/spof_1..4.mp3`), the same discipline as `specs.tsx` `audioDur`.
+Reuse the pattern: keep reveals for *appearing*, state timelines for *changing*,
+pin both to narration seconds, and change slides with `TransitionSeries` (slide
+between content scenes, fade at bookend edges). The primitives are
+resolution-agnostic — `VHeader` (centered two-tone header) exists for 9:16
+vertical cuts if a social format is ever needed.
+
 ## Licensing (read before commercial use)
 Remotion is **source-available, not free for all**: free for individuals, non-profits,
 and for-profit companies with **≤3 employees**; larger companies need a paid Company

@@ -133,3 +133,12 @@ one accent-tint focal node per figure, and `slide()` transitions between section
 to restyle for another brand. Improve this template over time rather than forking it
 ad hoc, and add new templates beside it (`templates/<name>/`) for new video shapes and
 new products.
+
+**Template versions are code-named and git-tagged** (`template/<codename>-vN`); the
+template directory at HEAD is always the default:
+- **Slipstream (v2, default)** — tag `template/slipstream-v2`. Adds the stateful
+  network language (`src/network.tsx`: FlowEdge particles, live→down state
+  timelines, stat cards, caption beats), two-tone `Header` titles, and the `Spof`
+  slide-deck proving example.
+- **Harbor (v1)** — tag `template/harbor-v1`. The reveal-only Section/spec model.
+  Recover it with: `git checkout template/harbor-v1 -- skills/video-toolkit/templates/remotion-diagrams`.

@@ -120,11 +120,14 @@ const LOGO_NAMES: Record<string, string> = {
   trustabl: 'Trustabl', opa: 'Open Policy Agent', nvidia: 'NVIDIA', owasp: 'OWASP', intoto: 'in-toto',
 };
 
-export const Header: React.FC<{ eyebrow?: string; title: string; logo?: string; badge?: string; badgeColor?: string; ms?: boolean }> =
-({ eyebrow, title, logo, badge, badgeColor = BRAND.gold, ms }) => (
+export const Header: React.FC<{ eyebrow?: string; title?: string; titleParts?: { t: string; c?: string }[]; sub?: string; subColor?: string; logo?: string; badge?: string; badgeColor?: string; ms?: boolean }> =
+({ eyebrow, title, titleParts, sub, subColor, logo, badge, badgeColor = BRAND.gold, ms }) => (
   <>
     {eyebrow && <div style={{ position: 'absolute', left: 92, top: 48, fontFamily: 'GeistMono', fontSize: 16, letterSpacing: '0.22em', textTransform: 'uppercase', color: BRAND.sub }}>{eyebrow}</div>}
-    <div style={{ position: 'absolute', left: 90, top: 78, fontFamily: 'InstrumentSerif', fontSize: 68, color: BRAND.ink, lineHeight: 1, transform: 'scaleX(1.2)', transformOrigin: 'left center' }}>{title}</div>
+    <div style={{ position: 'absolute', left: 90, top: 78, fontFamily: 'InstrumentSerif', fontSize: 68, color: BRAND.ink, lineHeight: 1, transform: 'scaleX(1.2)', transformOrigin: 'left center' }}>
+      {titleParts ? titleParts.map((p, i) => <span key={i} style={{ color: p.c ?? BRAND.ink }}>{p.t}</span>) : title}
+    </div>
+    {sub && <div style={{ position: 'absolute', left: 92, top: 162, fontFamily: 'GeistMono', fontSize: 19, letterSpacing: '0.04em', color: subColor ?? BRAND.link }}>{sub}</div>}
     <div style={{ position: 'absolute', left: 92, top: 210, width: W - 184, height: 1, background: BRAND.line }} />
     {logo === 'trustabl' ? (
       // dark-safe lockup: shield SVG + trustabl-word-dark.svg overlay (same technique as

@@ -1,5 +1,9 @@
 # Remotion animated diagram explainer (template)
 
+> **Codename: Slipstream (v2) — the default template.** Versions are git-tagged:
+> `template/slipstream-v2` (this one; stateful network primitives, slide-deck Spof
+> example, two-tone headers) and `template/harbor-v1` (its reveal-only predecessor).
+
 A **Remotion**-based engine for narrated, animated, branded diagram explainers — the
 "what are these artifacts and why do they matter" style video. Each section is a
 **data spec** (nodes / arrows / a mono code card), rendered by a generic `Section`
@@ -35,6 +39,21 @@ npx remotion render src/index.ts scan out/scan.mp4             # one section
    finish by ~80% so nothing pops in at the cut.
 3. Put logos in `public/logos/<name>.png`. Brand colors/fonts live in `src/brand.ts`.
 4. `Root.tsx` registers each section + the master `Explainer` (crossfade chain).
+
+## Network primitives
+`src/network.tsx` holds the stateful diagram language for network/topology
+explainers: `FlowEdge` (curved bezier edge with particles riding it), `RingNode` /
+`AppNode` (flip `live → down` on a timeline), `StatCard`, `TagPill`, `CaptionPill`
+(timed subtitle beats). These take state timelines in **seconds from the enclosing
+Sequence start**, so nodes can fail or re-route mid-scene on the narration beat —
+reveals are for *appearing*, states for *changing*. `src/Spof.tsx` (`Spof`,
+standard 16:9 canvas) is the worked example: three slides joined by slide/fade
+`TransitionSeries`, beats pinned to the narration clips in `public/audio/`:
+```bash
+npx remotion render src/index.ts Spof out/spof.mp4
+```
+(`VHeader` in network.tsx is a centered two-tone header for 9:16 vertical cuts,
+should a social format ever be needed.)
 
 ## Brand
 Edit `src/brand.ts` (navy/teal Trustabl defaults). Map the diagram-design roles
