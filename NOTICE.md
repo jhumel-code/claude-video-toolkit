@@ -16,3 +16,18 @@ reuse Trustabl's marks for unrelated projects.
 ## Voice samples
 `skills/video-toolkit/voices/*.mp3` are Microsoft Edge neural TTS (edge-tts) outputs,
 included as short reference samples of each voice.
+
+## Remotion template assets
+`skills/video-toolkit/templates/remotion-diagrams/public/`:
+- `fonts/` — Geist + Geist Mono (Vercel) and Instrument Serif, all SIL OFL 1.1.
+- `logos/trustabl*` — **Trustabl** brand marks, included only so the shipped example
+  (bookends, specs) renders out of the box. Trademarks of Trustabl; swap for your
+  own brand and do not reuse these marks for unrelated projects.
+- `logos/opa.png`, `nvidia.png`, `owasp.png`, `intoto.png`, `cncf.png` — trademarks
+  of their respective owners (Open Policy Agent/CNCF, NVIDIA, OWASP, in-toto),
+  included solely for nominative/illustrative use in the example specs (the video
+  names these projects). Not covered by the MIT license; replace them when adapting
+  the template.
+- `audio/*.mp3` — machine-generated narration and synthesized sound for the example
+  videos: voice tracks are Microsoft Edge neural TTS (edge-tts) output, the intro
+  SFX is synthesized. Regenerate with your own script/voice for real productions.

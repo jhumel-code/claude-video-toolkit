@@ -29,6 +29,8 @@ npx remotion studio                          # live preview while you edit specs
 npx remotion render src/index.ts Explainer out/explainer.mp4   # full video
 npx remotion render src/index.ts scan out/scan.mp4             # one section
 ```
+The example's narration, bookend audio, and logos ship in `public/`, so the render
+commands above work out of the box (asset licensing: repo `NOTICE.md`).
 
 ## Author your video
 1. Put narration mp3s in `public/audio/sy_<id>.mp3` (e.g. from this skill's
