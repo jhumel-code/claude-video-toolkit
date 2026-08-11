@@ -1,10 +1,11 @@
 # Claude Video Toolkit (plugin)
 
-Produce **brand intros**, **animated banners**, and **narrated terminal/CLI demo
-videos** — and record real Claude Code sessions — fully from the command line.
-Deterministic, free (Pillow/numpy + ffmpeg + VHS + edge-tts; no paid tools), and
-**brand-agnostic**: brand identity is a JSON profile, so the same engine produces
-on-brand video for any product. Trustabl ships as the worked example profile.
+Produce **brand intros**, **animated banners**, **narrated terminal/CLI demo
+videos**, and **animated diagram explainers** — and record real Claude Code
+sessions — fully from the command line. Deterministic, free (Pillow/numpy +
+ffmpeg + VHS + edge-tts; no paid tools), and **brand-agnostic**: brand identity
+is a JSON profile, so the same engine produces on-brand video for any product.
+Trustabl ships as the worked example profile.
 
 ## Components
 - **Skill: `video-toolkit`** — the full workflow + bundled scripts, brand profiles,
@@ -67,3 +68,25 @@ Trigger by asking for a video: "make a brand intro", "create an animated banner"
 "record a terminal demo", "make a demo video", "finish/grade this video". Choose a
 brand with `BRAND_PROFILE=<name>` (default `trustabl`); add your own brand by copying
 `profiles/example-northwind.json`. See the skill's `references/11-brand-profiles.md`.
+
+## Templates
+`skills/video-toolkit/templates/remotion-diagrams/` is the **Remotion animated
+diagram-explainer template** — the default starting point for any brand/product
+explainer video (React→video: narrated sections, eased reveals, slide transitions,
+banding-free backgrounds). It ships with everything the examples need (fonts,
+logos, narration audio), so after `npm install` the renders work out of the box —
+see `NOTICE.md` for asset licensing, and note Remotion's own license (free only for
+individuals and ≤3-employee companies).
+
+Template versions are **code-named and git-tagged**; the directory at HEAD is
+always the current default:
+
+| Codename | Tag | What it is |
+|---|---|---|
+| **Slipstream** (v2, default) | `template/slipstream-v2` | Adds the stateful network language: curved flow edges with travelling particles, nodes that flip live→down on a narration-synced timeline, stat cards, caption beats, two-tone headers, and the `Spof` slide-deck example. |
+| **Harbor** (v1) | `template/harbor-v1` | The original reveal-only diagram explainer: data-spec sections (nodes/arrows/code cards), navy skin, Instrument Serif + Geist. |
+
+To use an older version without rolling back the repo:
+```bash
+git checkout template/harbor-v1 -- skills/video-toolkit/templates/remotion-diagrams
+```
