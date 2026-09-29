@@ -29,8 +29,26 @@ animation; use Pillow when you want zero extra dependencies.
 
 ## Workflow
 See `templates/remotion-diagrams/README.md`. In short: drop narration mp3s in
-`public/audio/`, edit `src/specs.tsx`, `npx remotion studio` to preview,
-`npx remotion render src/index.ts Explainer out/explainer.mp4`.
+`public/audio/` (one edge-tts call per section, brand voice and rate, pronounce map
+applied), set each spec's `audioDur` to the mp3's exact duration, edit `src/specs.tsx`,
+QA with `npx remotion still ... --scale=0.5`, then
+`npx remotion render src/index.ts ExplainerWorking out/explainer.mp4` (IntroA + sections,
+no outro: the default shape; `Explainer` adds the branded outro).
+4K: `--scale=1.5 --crf=10 --concurrency=2`, started in the background.
+
+## Keeping the template current
+The live Trustabl project the template came from evolves; re-sync the engine files
+(`brand.ts`, `components.tsx`, `Section.tsx`, `Bookends.tsx`, `fonts.ts`, `network.tsx`,
+`Spof.tsx`, `specs.tsx`) when it improves, and check the shipped mp3s still match the
+specs' `audioDur` (a 2026-09-29 sync found them 6.9 s apart on one section, and IntroA
+drawing "Trust" navy-on-navy). `Root.tsx` is the template's own: it registers only the
+template's compositions.
+
+## Skins and bookends
+`src/brand.ts` holds two skins with identical token names: navy (default) and the
+original light skin (`REMOTION_SKIN=light`); any other value throws. Bookends:
+`IntroA` opens explainers; `DemoIntro` / `DemoOutro` are the dark terminal-demo bookends
+(`DemoIntro` ships pre-rendered as `assets/trustabl-intro.mp4`, the official intro).
 
 ## Template codenames
 The template is versioned by codename + git tag; the directory at HEAD is the

@@ -19,9 +19,11 @@ your own brand, see [`11-brand-profiles.md`](11-brand-profiles.md).
   "palette": { "accent":[81,193,181], "accent_hi":[150,235,220],
                "bg_deep":[0,9,15], "bg_lift":[2,33,40],
                "text":[247,249,247], "subtext":[150,166,178] },
-  "grade": { ... },                    // finish.sh color grade (see docs/11)
-  "voice": "en-US-AvaNeural",
-  "pronounce": { "Trustabl": "Trustable" }
+  "grade": { ... },                    // finish.sh color grade (see 11-brand-profiles.md)
+  "voice": "en-US-AvaNeural", "rate": "-7%",
+  "pronounce": { "Trustabl": "Trustable" },
+  "intro_clip": "assets/trustabl-intro.mp4",
+  "terminal": { "width": 2560, "height": 1440, "font_size": 28, "margin_fill": "#070E1A", ... }
 }
 ```
 
@@ -36,9 +38,11 @@ your own brand, see [`11-brand-profiles.md`](11-brand-profiles.md).
 | `logo_white.png` | white shield | dark/photo backgrounds |
 | `marketing_banner.png` | 2:1 | navy + teal motif + lockup + tagline |
 | `github_banner.jpg` | wide | README banner |
+| `trustabl-intro.mp4` | 4.33 s, 2560x1440, with audio | the official intro (`intro_clip`), the Remotion `DemoIntro` render |
 
-`brand_intro.py` trims the logo to its content bbox automatically (cached as
-`_logo_brand.png` in `OUT_DIR`).
+`brand_intro.py` trims the logo to its content bbox automatically (cached per brand as
+`_logo_<profile>.png` in `OUT_DIR`). The official intro is `assets/trustabl-intro.mp4`
+(the profile's `intro_clip`): Trustabl videos open with it, never with a generated one.
 
 **Palette**
 
@@ -47,7 +51,7 @@ your own brand, see [`11-brand-profiles.md`](11-brand-profiles.md).
 | accent | `(81,193,181)` | `#51C1B5` |
 | accent_hi | `(150,235,220)` | `#96EBDC` |
 | bg_deep | `(0,9,15)` | `#00090F` |
-| bg_lift | `(1,36,43)` | `#01242B` |
+| bg_lift | `(2,33,40)` | `#022128` |
 | text | `(247,249,247)` | `#F7F9F7` |
 | subtext | `(150,166,178)` | `#96A6B2` |
 

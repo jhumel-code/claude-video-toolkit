@@ -1,4 +1,13 @@
-# Trustabl Video Toolkit — Prioritized Improvement Plan
+# Trustabl Video Toolkit: Prioritized Improvement Plan (June 2026, historical)
+
+> **Status (2026-09-29).** Kept as the record of the June plan, not as current guidance.
+> Shipped: 1, 3, 4 and 14 as `finish.sh`; 8 as the brand profile's `terminal` block +
+> `gentape.py`; 10 as the pronounce map and profile `voice`/`rate`. Superseded: the
+> recipes below that DARKEN (grade `brightness=-0.02`, `vignette=PI/5`, grain 18) were
+> reversed on 2026-07-21; `finish.sh` and the brand profile hold the current values.
+> 11 (a single `render_spec.py`) was never built; animated explainers moved to the
+> Remotion template instead. The 1920x1080 masters and 30 fps terminal capture here
+> were replaced by native 2560x1440 at 25 fps.
 
 Each item: **what · why · file · how (recipe) · effort · impact.** Effort/impact are S/M/L.
 Tiers: **P1** = do first (high impact, low effort, or fixes a defect). **P2** = high impact, moderate effort. **P3** = system-level, larger.

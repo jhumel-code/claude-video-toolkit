@@ -5,8 +5,14 @@
 > `OUT_DIR`. See [11-brand-profiles](11-brand-profiles.md). Values below describe the
 > Trustabl example profile.
 
+> **Only for brands without an official intro.** If the profile sets `intro_clip`
+> (Trustabl does: `assets/trustabl-intro.mp4`, rendered from the Remotion template's
+> `DemoIntro`), that clip is the intro and `brand_intro.py intro` refuses to run. A
+> generated Trustabl intro was rejected twice (2026-08-05, 2026-08-29). Banners are
+> still fine to generate.
+
 `brand_intro.py` generates a branded motion-graphics intro (and a 2:1 banner) with
-**Pillow + numpy** — no browser, no After Effects. Deterministic frame-by-frame,
+**Pillow + numpy**: no browser, no After Effects. Deterministic frame-by-frame,
 2× supersampled for crisp anti-aliasing, additive glow/bloom for the teal look.
 
 ## Concept (the approved sequence, ~6.4s)
@@ -15,21 +21,22 @@
 2. **Forge** — light particles **converge to center and bloom into the shield**
    (the real `logo.png`), with a seal flash + teal glow.
 3. **Lockup** — shield settles beside the **Trustabl** wordmark (Poppins SemiBold).
-4. **Resolve** — thin teal rule, tagline *"Static analysis for AI agents"*, and a
-   row of **capability pills**: `Scan · Auto-fix · Guardrails · SBOM · Vuln-scan`.
+4. **Resolve**: thin teal rule, the profile's tagline, and a row of the profile's
+   capability `pills`.
 
 > An earlier version opened with an **audit phase** (agent graph + scan beam +
-> red/amber→green findings + a readiness score). That was **cut** per feedback — the
-> code still shows the technique (graph/beam/finding nodes) if you want it back, but
-> the shipped intro is the pure-brand forge above.
+> red/amber→green findings + a readiness score). That was **cut** per feedback and is
+> no longer in the code; the shipped intro is the pure-brand forge above.
 
 ## Run
 
 ```bash
-python vo/brand_intro.py intro            # 1950x1260 video intro  -> intro_silent.mp4
-python vo/brand_intro.py banner           # 1920x960 (2:1) banner  -> banner_silent.mp4
-python vo/brand_intro.py intro mock       # quick 6-frame storyboard montage (bi_mock.png)
+BRAND_PROFILE=<p> OUT_DIR=<dir> python scripts/brand_intro.py intro        # 1950x1260 -> intro_silent.mp4
+BRAND_PROFILE=<p> OUT_DIR=<dir> python scripts/brand_intro.py banner       # 1920x960 (2:1) -> banner_silent.mp4
+BRAND_PROFILE=<p> OUT_DIR=<dir> python scripts/brand_intro.py intro mock   # 6-frame storyboard (bi_intro_mock.png)
 ```
+A full intro renders ~160 supersampled frames; check the mock first. The intro is
+1950x1260: pass it through `assemble.py`, which fits it to the body's canvas.
 Then mux the sound (see [05-sound-design](05-sound-design.md)):
 ```bash
 ffmpeg -i intro_silent.mp4 -i intro_audio.wav -c:v copy -c:a aac -b:a 192k -shortest intro.mp4
@@ -47,14 +54,14 @@ ffmpeg -i intro_silent.mp4 -i intro_audio.wav -c:v copy -c:a aac -b:a 192k -shor
 - **`frame(t)`** — everything is a function of `t` via easing (`e_out/e_in/e_io`) and
   `seg(t,a,b)` (normalized progress in a window). Timeline constants near the top:
   `T_CONV / T_SEAL / T_SHIELD / T_SET`, plus the wordmark/rule/tagline/pill windows.
-- **`CAPS`** — the capability pill labels. Change this list to re-word.
+- **`CAPS`**: the capability pill labels, read from the profile's `pills`.
 
 ## Brand specifics
 
 - Teal `#51C1B5` = `(81,193,181)`. Logo = `assets/logo.png` (teal) / `logo_white.png`.
 - Wordmark = **Poppins SemiBold** (bundled in `fonts/`), white.
-- Trim the logo to its content bbox once and save a working copy
-  (`_logo_teal.png`); `brand_intro.py` loads that.
+- The logo is trimmed to its content bbox automatically and cached per brand as
+  `_logo_<profile>.png` in `OUT_DIR`.
 
 See **[brand.md](brand.md)** for the full palette + asset inventory.
 

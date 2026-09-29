@@ -16,11 +16,11 @@ Generate more samples: `python -m edge_tts --voice <id> --text "..." --write-med
 
 | Sample file | Voice id | Role — where & how it's used | Notes |
 |-------------|----------|------------------------------|-------|
-| **`en-US-AvaNeural.mp3`** | `en-US-AvaNeural` | **PRIMARY narrator.** The default in `vid.py`, `reaudio.py`, `session_vid.py`. Every current marketing video + the plugin demo uses it. | **English-locked → cannot code-switch.** This is the default for ALL narration. 7.2s. |
-| `en-US-AndrewNeural.mp3` | `en-US-AndrewNeural` | **Male narrator variant.** Alternate-voice demo renders via `make_voice.sh`/`build_voice.sh`. | Paces ≈ Ava (within ~0.3%) → works with the no-re-pace multi-voice swap. 7.2s. |
+| **`en-US-AvaNeural.mp3`** | `en-US-AvaNeural` | **PRIMARY narrator.** The Trustabl profile's `voice` (at `rate` -7%), which `vid.py` and `session_vid.py` use. Every current marketing video + the plugin demo uses it. | **English-locked → cannot code-switch.** This is the default for ALL narration. 7.2s. |
+| `en-US-AndrewNeural.mp3` | `en-US-AndrewNeural` | **Male narrator variant.** Alternate-voice demo renders (set `voice` in the spec). | Paces ≈ Ava (within ~0.3%) → works with the no-re-pace multi-voice swap. 7.2s. |
 | `en-US-EmmaNeural.mp3` | `en-US-EmmaNeural` | **Female narrator variant.** Alternate-voice demo renders. | Paces ≈ Ava (~2% slower). 7.4s. |
-| `en-US-GuyNeural.mp3` | `en-US-GuyNeural` | **Utility / label voice.** `build_compare.py` uses it to speak option numbers ("One.", "Two.") in the A/B pronunciation comparison, so the labels are clearly distinct from the Ava clips being compared. | **Not for narration** — it's ~12% slower (8.1s) and used only as spoken labels. |
-| `en-US-AvaMultilingualNeural.mp3` | `en-US-AvaMultilingualNeural` | **DEPRECATED for narration.** The *original* voice; `reaudio.py` exists specifically to replace it with `AvaNeural`. Kept here only as the "what not to use" reference (and because `reaudio.py` re-synths it to recover original clip slot timings). | Auto-detects language → **code-switches on coined words** ("Trustabl") into another language's phonology. ~8% slower than mono Ava (7.8s). |
+| `en-US-GuyNeural.mp3` | `en-US-GuyNeural` | **Utility / label voice.** `scripts/legacy/build_compare.py` used it to speak option numbers ("One.", "Two.") in the A/B pronunciation comparison, so the labels are clearly distinct from the Ava clips being compared. | **Not for narration**: it's ~12% slower (8.1s) and used only as spoken labels. |
+| `en-US-AvaMultilingualNeural.mp3` | `en-US-AvaMultilingualNeural` | **DEPRECATED for narration.** The *original* voice; `scripts/legacy/reaudio.py` replaced it with `AvaNeural` across the marketing batch. Kept here only as the "what not to use" reference. The builders refuse it. | Auto-detects language → **code-switches on coined words** ("Trustabl") into another language's phonology. ~8% slower than mono Ava (7.8s). |
 
 ## The rule
 
@@ -41,6 +41,6 @@ GuyNeural          8.11s   (~12% slower — labels only)
 ```
 
 A voice within ~1-2% of Ava can be swapped onto Ava's beat starts with no re-pace
-(`fit_body.py` mops up any clip that overruns). A much slower voice (Aria/Jenny are
+(an atempo fit mops up any clip that overruns). A much slower voice (Aria/Jenny are
 ~15% slower) needs a real re-pace, not a swap. Full detail:
 [`../references/06-voice-models.md`](../references/06-voice-models.md).

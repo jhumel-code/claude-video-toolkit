@@ -22,11 +22,16 @@ wordmark/pills — that proves the engine is generic).
 | `palette.text` / `subtext` | [r,g,b] | `brand_intro.py` | wordmark / tagline |
 | `grade.curves_r/g/b` | string | `finish.sh` | ffmpeg `curves` control points |
 | `grade.eq` / `colorbalance` | string | `finish.sh` | ffmpeg filter args |
-| `voice` | string | narration | English-locked TTS voice |
-| `pronounce` | map | narration | respell coined words for TTS (on-screen text stays correct) |
+| `voice` | string | `vid.py`, `session_vid.py` | English-locked TTS voice (multilingual voices are refused) |
+| `rate` | string | `vid.py`, `session_vid.py` | edge-tts rate, e.g. `-7%` (default `+0%`) |
+| `pronounce` | map | `pronounce.py` → builders | respell coined words for TTS, merged over the shared `profiles/pronounce.json` (on-screen text stays correct) |
+| `intro_clip` | path | `assemble.py`, `brand_intro.py` | the brand's official intro. When set, `assemble.py` prepends it by default and `brand_intro.py intro` refuses to generate one |
+| `terminal` | object | `gentape.py`, `vid.py`, `assemble.py` | `width`/`height` (= the video canvas), `font_size`, `padding`, `margin`, `margin_fill` (also the pad colour), `border_radius`, `window_bar`, `typing_speed`, optional `font_family`, and a VHS `theme` object |
 
-Paths (`logo`, `fonts_dir`) resolve relative to the **toolkit root** (the parent of
-`scripts/`). Override the profiles directory with `BRAND_PROFILE_DIR`.
+Paths (`logo`, `fonts_dir`, `intro_clip`) resolve relative to the **toolkit root** (the
+parent of `scripts/`). Override the profiles directory with `BRAND_PROFILE_DIR`. A spec's
+`voice` / `rate` / `canvas` / `pad_color` override the profile for one video; a spec's
+`brand` picks a profile other than `BRAND_PROFILE`.
 
 ## Loader (`scripts/brand_config.py`)
 
@@ -41,10 +46,14 @@ CLI helpers:
 ```bash
 python scripts/brand_config.py show  trustabl            # summary
 python scripts/brand_config.py grade example-northwind   # ffmpeg grade string
+python scripts/brand_config.py intro trustabl            # official intro path, exit 1 if none
 ```
 
 ## How scripts consume it
 
+- **`gentape.py`** writes the `terminal` block into every tape; **`vid.py`** /
+  **`session_vid.py`** take the canvas and pad colour from it, and the voice, rate and
+  pronounce map from the profile; **`assemble.py`** prepends `intro_clip`.
 - **`brand_intro.py`** reads wordmark, palette, pills, tagline, logo, fonts from the
   active profile. Output goes to `OUT_DIR` (env). Nothing brand-specific is hardcoded.
 - **`finish.sh`** takes the grade via `$GRADE`; wire a profile's grade in:
@@ -55,7 +64,9 @@ python scripts/brand_config.py grade example-northwind   # ffmpeg grade string
 
 ## Add a new brand (3 steps)
 
-1. `cp profiles/example-northwind.json profiles/acme.json` and edit the values.
+1. `cp profiles/example-northwind.json profiles/acme.json` and edit the values,
+   including the `terminal` theme. If the brand has an official intro video, drop it in
+   `assets/` and set `intro_clip`.
 2. Put `acme`'s logo in `assets/` and (optional) fonts in `fonts/`; point `logo` /
    `font_family` at them.
 3. Render: `BRAND_PROFILE=acme OUT_DIR=./out python scripts/brand_intro.py intro`, then

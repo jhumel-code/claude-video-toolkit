@@ -1,11 +1,24 @@
 # Claude Video Toolkit (plugin)
 
-Produce **brand intros**, **animated banners**, **narrated terminal/CLI demo
-videos**, and **animated diagram explainers** — and record real Claude Code
-sessions — fully from the command line. Deterministic, free (Pillow/numpy +
-ffmpeg + VHS + edge-tts; no paid tools), and **brand-agnostic**: brand identity
-is a JSON profile, so the same engine produces on-brand video for any product.
-Trustabl ships as the worked example profile.
+Produce **narrated terminal/CLI demo videos**, **animated diagram explainers**,
+recorded Claude Code sessions, **brand intros** and **animated banners**, fully from
+the command line. Deterministic and free (VHS + edge-tts + ffmpeg + Pillow/numpy; the
+Remotion template is free for individuals and small teams), and **brand-agnostic**:
+brand identity (look, voice, terminal theme, official intro) is a JSON profile, so the
+same engine produces on-brand video for any product. Trustabl ships as the worked
+example profile.
+
+The terminal-demo path in one screen:
+```bash
+python scripts/gentape.py batch.json                         # tapes in the brand's house style
+vhs f01.tape                                                 # (in WSL) record real footage
+python scripts/beats.py f01.mp4 --spec spec.json --sheet pins.png   # pin every beat
+python scripts/vid.py spec.json                              # narrate: body + review sidecar
+bash scripts/review.sh out/f01.mp4                           # (in WSL) self-review gate
+python scripts/assemble.py out/f01.mp4 out/joined.mp4        # + the brand's official intro
+bash scripts/finish.sh out/joined.mp4 final.mp4 demo
+```
+(scripts live in `skills/video-toolkit/scripts/`)
 
 ## Components
 - **Skill: `video-toolkit`** — the full workflow + bundled scripts, brand profiles,
@@ -58,16 +71,31 @@ trusted):
 ```
 
 ## Setup / prerequisites
-- **WSL Ubuntu** with `vhs` + `ttyd` + chromium libs (terminal recording only;
-  brand intros/banners + finishing don't need it). Record as a non-root `demo` user.
+- **WSL Ubuntu** with `vhs` + `ttyd` + chromium libs (terminal recording), plus
+  `tesseract-ocr` and `faster-whisper` for the self-review pass. Record as a non-root
+  `demo` user. Brand intros/banners and finishing don't need WSL.
 - **Host:** `ffmpeg` + `ffprobe`; Python 3 with `pip install edge-tts pillow numpy`;
-  optional `sox` for richer sound. The skill front-loads these checks.
+  optional `sox` for richer sound; Node for the Remotion template. The skill
+  front-loads these checks.
 
 ## Usage
-Trigger by asking for a video: "make a brand intro", "create an animated banner",
-"record a terminal demo", "make a demo video", "finish/grade this video". Choose a
-brand with `BRAND_PROFILE=<name>` (default `trustabl`); add your own brand by copying
-`profiles/example-northwind.json`. See the skill's `references/11-brand-profiles.md`.
+Trigger by asking for a video: "make a demo video", "record a terminal demo", "make an
+explainer video", "make a brand intro", "create an animated banner", "finish/grade this
+video". Choose a brand with `BRAND_PROFILE=<name>` (default `trustabl`); add your own
+brand by copying `profiles/example-northwind.json`. See the skill's
+`references/11-brand-profiles.md`.
+
+## Releasing an update
+The installed plugin is a versioned copy, so a pushed change only reaches new sessions
+when the version moves. For each release:
+1. Bump `version` in `.claude-plugin/plugin.json`, the matching entry in
+   `.claude-plugin/marketplace.json`, and `metadata.version` in `SKILL.md`, then
+   `claude plugin validate .`
+2. Commit and push to `main`.
+3. `claude plugin marketplace update jhumel-code`, then
+   `claude plugin update claude-video-toolkit@jhumel-code`, and restart Claude Code.
+Version 0.1.0 never changed, which is why the installed copies were being hand-synced
+(and drifted).
 
 ## Templates
 `skills/video-toolkit/templates/remotion-diagrams/` is the **Remotion animated

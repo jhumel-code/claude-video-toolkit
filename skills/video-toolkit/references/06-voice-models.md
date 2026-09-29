@@ -3,9 +3,16 @@
 Narration is **edge-tts** (Microsoft Edge neural TTS): free, no API key.
 
 ```bash
-python -m edge_tts --voice en-US-AvaNeural --text "..." --write-media out.mp3
+python -m edge_tts --voice en-US-AvaNeural --rate=-7% --text "..." --write-media out.mp3
 python -m edge_tts --list-voices | grep en-US        # list voices
 ```
+
+The builders (`vid.py`, `session_vid.py`) take the voice and rate from the spec, else the
+brand profile (`voice`, `rate`), and pass the rate as ONE token (`--rate=-7%`): as two
+tokens argparse reads `-7%` as a flag and edge-tts exits 2. Trustabl's rate is `-7%`
+(the user found the natural rate too fast; `-10%` sounded robotic). A narration clip is
+reproducible to the millisecond: one edge-tts call per clip, same voice, rate and
+respelled text, no hand-inserted silences.
 
 > **Hear them:** [`../voices/`](../voices/) has a comparable sample of every voice
 > we use (same sentence) plus a table of where/how each one is used. Play
@@ -42,38 +49,27 @@ triggered a foreign-sounding blip mid-sentence across an entire 54-video batch.
 Ava ≈ Andrew ≈ Emma in pace; **Aria/Jenny ~15% slower**. The multi-voice swap
 trick (below) only works when the new voice paces within ~1-2% of the reference.
 
-## Re-voice / fix audio on a FINISHED video — `reaudio.py`
+## Re-voice / fix audio on a FINISHED video
 
-Swap the narration of an **already-rendered** video in place, no re-record, no
-picture re-encode:
+Swap the narration of an already-rendered video without re-recording or re-encoding
+the picture: re-synthesize each line with the new voice, place it at the
+`narr_start_s` recorded in the video's `.beats.json` sidecar (atempo-fit only a clip
+that would overrun its slot), and mux onto the copied video stream
+(`-map 0:v -c:v copy`). Flag any clip that needed more than a 5% speed-up for an
+ear-check. Simpler still: change `voice`/`rate` in the spec and re-run vid.py, which
+reuses the footage.
 
-```bash
-python vo/reaudio.py <spec.json> <finished_video.mp4> <out.mp4>
-# batch over many: vo/reaudio_batch.sh
-```
-
-How it works: re-synth each clip with the OLD voice to recover the exact original
-slot durations (byte-deterministic), reconstruct the timeline, drop NEW-voice clips
-on the identical starts (atempo-fit only if a clip would overrun), then mux onto the
-**copied** video stream (`-map 0:v -c:v copy`). Picture stays bit-identical;
-alignment preserved; fully reversible (back up originals first). This is how a whole
-54-video batch was switched off the multilingual voice after the source footage was
-already deleted. Watch the log for `max_atempo > 1.05` (a clip that needed a >5%
-speed-up) → flag those for an ear-check.
-
-## The multi-voice swap (older pipeline, optional)
-
-`make_voice.sh <edge-voice> <prefix>` synthesizes a full clip set in a voice;
-`build_voice.sh <prefix>` rebuilds a v17-style demo by mixing the new clips at the
-**reference voice's beat starts** (no re-pace). `build_intro_voice.py` rebuilds the
-intro to each clip's real duration; `fit_body.py` is the safety net that atempo-fits
-any clip that would overrun its slot (prevents double-voice). Use only when the new
-voice paces ≈ the reference; a much slower voice needs a real re-pace.
+`scripts/legacy/reaudio.py` is the one-off version of this that moved a 54-video batch
+off the multilingual voice after the footage was deleted (it recovered the slot times
+by re-synthesizing the old voice, which is byte-deterministic). The June multi-voice
+swap scripts (`make_voice.sh`, `build_voice.sh`, `fit_body.py`) are there too: they
+only work when the new voice paces within ~1-2% of the reference.
 
 ## Hard limit
 
 **You (the model) cannot hear audio.** Verify narration objectively — clip
 durations, `silencedetect` gap structure, frame timestamps — and have the **human
 confirm** tone / pronunciation / "does it sound right". For pronunciation A/Bs,
-generate a labelled comparison (`build_compare.py` stitches numbered options into
-one `COMPARE_listen_to_this.mp3`) and let them pick.
+generate a labelled comparison (numbered spoken labels between the options, stitched
+into one `COMPARE_listen_to_this.mp3`; `scripts/legacy/build_compare.py` is the
+worked example) and let them pick.

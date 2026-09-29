@@ -52,19 +52,16 @@ Launch with `--model opus` (kills a transient "model unavailable" banner) and
 deterministic, unlike the mid-session tool-approval prompt (which the allow-list
 `mcp__<srv>__<tool>` did NOT pre-approve). Trim the warning frame in post.
 
+Start from the house header (`templates/demo.example.tape`, or the first lines gentape
+writes for your brand) so the session records at the canvas size in the brand theme:
+
 ```tape
 Output full.mp4
-Set Shell "bash"
-Set FontSize 14
-Set Width 1300
-Set Height 840
-Set Padding 16
-Set Theme "Dracula"
-Set TypingSpeed 32ms
+# ...the house Set lines from templates/demo.example.tape (2560x1440, FontSize 28, theme)...
 Hide
 Type "export PATH=$HOME/node-v20.18.1-linux-x64/bin:$HOME/.npm-global/bin:$PATH"
 Enter
-Type "cd ~/demo/<repo> && clear"
+Type "cd /home/demo/demo/<repo> && clear"
 Enter
 Show
 Sleep 1s
@@ -89,13 +86,18 @@ where it lands before recording.
 ## Re-pace into a narrated cut — `session_vid.py`
 
 A ~4 min raw take is too long. `session_vid.py` re-paces it to ~2-3 min:
-- **speed-fit** action spans (`setpts=(ld+GAP)/L*PTS`) — scan running, edits, re-scans;
-- **freeze-hold** result frames you want readable (the findings table, the final score).
+- **speed-fit** action spans (`"mode": "speed", "in", "out"`): scan running, edits,
+  re-scans are time-stretched to the narration length;
+- **freeze-hold** result frames you want readable (`"mode": "freeze", "at"`): the
+  findings table, the final score.
 
-Per scene = `{text, mode:"speed"|"freeze", in/out or at}`. Pull narration-accurate
-content from the **session transcript** at
-`~/.claude/projects/<slug>/*.jsonl` (assistant text turns) — far more reliable than
-reading frames. Same mix + upscale + zoom finish as `vid.py`.
+```bash
+python scripts/session_vid.py session.json      # templates/session.example.json
+```
+Per scene = `{t, mode, in/out or at, expect}`. Pull narration-accurate content from the
+**session transcript** at `~/.claude/projects/<slug>/*.jsonl` (assistant text turns): far
+more reliable than reading frames. It shares vid.py's engine (canvas, brand voice and
+rate, pronounce map, sidecar), so `review.sh` and `assemble.py` work the same way.
 
 ## Gotchas specific to this path
 

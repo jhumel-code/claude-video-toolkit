@@ -1,144 +1,146 @@
 ---
 name: video-toolkit
 description: >
-  This skill should be used when the user wants to produce marketing or demo videos
-  from the command line — "make a brand intro", "create an animated banner", "record
-  a terminal/CLI demo", "make a demo video", "narrate a screencast", "record a Claude
-  Code session", or "finish/color-grade a rendered video". A free, deterministic
-  Pillow + ffmpeg + VHS + edge-tts pipeline. Brand-agnostic via JSON brand profiles
-  (Trustabl ships as the example).
+  This skill should be used when the user wants to produce a marketing, demo, or explainer
+  video from the command line: "make a demo video", "record a terminal/CLI demo", "narrate
+  a screencast", "record a Claude Code session", "make an explainer video", "make a brand
+  intro", "create an animated banner", or "finish/color-grade a rendered video". A free,
+  deterministic VHS + edge-tts + ffmpeg pipeline for real terminal footage, a Remotion
+  template for animated diagram explainers, and Pillow motion graphics. Brand-agnostic via
+  JSON brand profiles (Trustabl ships as the example).
 metadata:
   version: "0.1.0"
 ---
 
 # Claude Video Toolkit
 
-Produce, fully from the CLI and deterministically (no paid tools): brand intros +
-looping banners (Pillow/numpy + ffmpeg), narrated terminal demos (VHS + ffmpeg +
-edge-tts), and recorded Claude Code sessions. Brand identity is **data** — a profile
-in `profiles/<name>.json`.
+Produce narrated terminal demos (VHS + edge-tts + ffmpeg), animated diagram explainers
+(Remotion), recorded Claude Code sessions, and brand intros/banners (Pillow), fully from the
+CLI. Brand identity is **data**: a profile in `profiles/<name>.json`.
 
 Paths below are relative to this skill's directory. Read the matching guide in
 `references/` before running a workflow; run the tools in `scripts/`.
 
-## Prerequisites — check first, fail loudly if missing
-- **VHS recording requires WSL** (Ubuntu) with `vhs` + `ttyd` + chromium libs, run as
-  a non-root `demo` user. Windows VHS hangs. Brand intros/banners and finishing do
-  NOT need VHS.
-- **Host:** `ffmpeg` + `ffprobe`; Python 3 with `pip install edge-tts pillow numpy`;
-  optional `sox` for `sound_pads.sh`.
-- If a required tool is absent, tell the user exactly what to install before running.
+## Prerequisites: check first, fail loudly if missing
+- **Host:** `ffmpeg` + `ffprobe`; Python 3 with `pip install edge-tts pillow numpy`.
+- **VHS recording and `review.sh` run in WSL** (Ubuntu) as a non-root `demo` user:
+  `vhs` + `ttyd` + chromium libs, `tesseract-ocr`, and `faster-whisper`
+  (`references/12-self-review.md`). Windows VHS hangs.
+- **Remotion explainers:** Node + `npm install` in a copy of the template.
+- If a tool is missing, tell the user exactly what to install before running.
 
-## Brand profiles — the reusable core
-- Select a brand with `BRAND_PROFILE=<name>` (default `trustabl`). Profiles live in
-  `profiles/`; `example-northwind.json` is a second brand that proves genericity.
-- A profile carries: `wordmark`, `tagline`, `pills[]`, `palette` (accent / accent_hi /
-  bg_deep / bg_lift / text / subtext), `logo`, `fonts_dir` + `font_family`, a `grade`
-  block, `voice`, and a `pronounce` map.
-- Add a brand: copy `example-northwind.json`, edit values, drop the logo in `assets/`,
-  point `logo` / `font_family` at it. Full schema: `references/11-brand-profiles.md`.
-- Inspect: `python scripts/brand_config.py show <profile>` and `... grade <profile>`.
+## Brand profiles
+- `BRAND_PROFILE=<name>` (default `trustabl`); `example-northwind.json` proves genericity.
+- A profile carries the look (`palette`, `logo`, fonts, `grade`), the voice (`voice`,
+  `rate`, `pronounce` respellings), the terminal style (`terminal`: canvas size, font
+  size, theme, margin colour), and `intro_clip`, the brand's official intro if it has one.
+- `python scripts/brand_config.py show <profile>` prints all of it. Schema:
+  `references/11-brand-profiles.md`.
 
 ## Golden rules (non-negotiable)
-1. **VHS only in WSL**, as `demo`, with absolute `/home/demo/demo/` paths (never `~`);
-   a tape's `Output` must be relative.
-2. **Narrate with an English-locked voice** (the profile's `voice`, e.g.
-   `en-US-AvaNeural`); never a `*MultilingualNeural` voice — they code-switch on coined
-   words. The model is the cause; respelling text won't fix it.
-3. **You cannot hear audio** — verify by clip durations + `silencedetect`; the human is
-   the ear for tone/pronunciation.
-4. **Verify frames by eye** (`ffmpeg -ss N -i v.mp4 -frames:v 1 f.png`); vision is
-   unreliable on near-identical terminal frames.
-5. **Determinism**: edge-tts is byte-stable; live VHS timing is not — re-pin beats each
-   render and freeze result frames.
+1. **Official intro first.** If `python scripts/brand_config.py intro` prints a clip, that
+   clip IS the intro: `assemble.py` prepends it. Never generate one for that brand
+   (`brand_intro.py` refuses). Trustabl demos: official intro, no outro. The opening
+   narration still has to say what the video is for.
+2. **Real footage.** A demo shows real commands producing real output, recorded with VHS.
+   Never a Pillow slideshow of fake terminal frames unless the user asks for one.
+3. **Native pixels.** Record terminals at the canvas size (gentape.py does, from the
+   profile). The builders pad, never upscale or stretch, footage that fits the canvas.
+4. **English-locked voice** at the brand rate (Trustabl: `en-US-AvaNeural`, `-7%`). The
+   builders read both from the profile and refuse `*MultilingualNeural` voices, which
+   code-switch on coined words. Respelling cannot fix that; the model is the cause.
+5. **You cannot hear audio.** `review.sh` checks sync, spillover, loudness and on-screen
+   text; its `pron_suspect` notes mean a human spot-listens that beat.
+6. **Verify frames yourself** (`ffmpeg -ss N -i v.mp4 -frames:v 1 f.png`). Vision
+   subagents hallucinate on runs of near-identical terminal frames.
+7. **Narration:** no structural labels ("Act one", "Part 2", "Step 3"); introduce each beat
+   before it lands (the intent line plays while the command types); no em dashes in any
+   on-screen text; keep claims to what the footage actually shows.
+8. **VHS only in WSL**, as `demo`, with absolute `/home/demo/demo/` paths, and a tape's
+   `Output` must be relative. Live timing changes on every take: re-pin after re-recording.
 
-## Style (v2)
-6. **Match the visual register to the product.** Restraint reads as trust for
-   technical/security tools; avoid bloom/particle/lens-flare excess and let real output
-   carry the drama. The "restraint budget" is in `references/10-style-guide.md`.
-7. **Always run `finish.sh` last** (fixes dark-gradient banding, applies the brand
-   grade, adds subtle grain, encodes bit-exact):
-   `GRADE="$(python scripts/brand_config.py grade <profile>)" bash scripts/finish.sh in.mp4 out.mp4 brand`
-8. **edge-tts has no usable SSML** — only `--rate` / `--pitch` / `--volume`. Respell
-   coined words for TTS (the profile's `pronounce` map); keep on-screen text correct;
-   insert pauses as ffmpeg silence between clips, not markup.
-
-## Quickstart
-
-### Brand intro + banner (no VHS)
+## Terminal demo (the main path)
 ```bash
-BRAND_PROFILE=<profile> OUT_DIR=<workdir> python scripts/brand_intro.py intro    # -> intro_silent.mp4
-BRAND_PROFILE=<profile> OUT_DIR=<workdir> python scripts/brand_intro.py banner   # -> banner_silent.mp4
-python scripts/sound_gen.py                                                      # soundtrack (set paths inside)
-ffmpeg -i intro_silent.mp4 -i intro_audio.wav -c:v copy -c:a aac -shortest intro.mp4
-GRADE="$(python scripts/brand_config.py grade <profile>)" bash scripts/finish.sh intro.mp4 intro_final.mp4 brand
+python scripts/gentape.py batch.json                 # tapes in the brand's house style
+wsl.exe -u demo bash -s <<'EOF'                      # quoted heredoc: wsl.exe mangles $
+cd /home/demo/demo && vhs f01.tape
+EOF
+python scripts/beats.py f01.mp4 --spec spec.json --sheet pins.png   # pins ts/res/end per beat
+# look at pins.png, write narration a/b + expect tokens into spec.json
+python scripts/vid.py spec.json                      # -> out/<name>.mp4 + <name>.beats.json
+bash scripts/review.sh out/<name>.mp4                # in WSL; gate on exit code 0
+python scripts/assemble.py out/<name>.mp4 out/joined.mp4          # + official intro
+bash scripts/finish.sh out/joined.mp4 final.mp4 demo
 ```
-It renders ~160 supersampled frames — if a single run is too long, render in chunks
-(resume by skipping existing frames) and verify frames by eye. Detail:
-`references/04-brand-intro-and-banner.md`; sound in `references/05-sound-design.md` and
-`scripts/sound_pads.sh`.
+- `batch.json` (`templates/batch.example.json`): commands may contain double quotes. Env
+  the commands need goes in the entry's `setup`: the VHS shell does not reliably source
+  `~/.bashrc`, and a missing licence var fails silently behind `2>/dev/null`.
+- `beats.py` needs the clear-before-each-command structure gentape emits. For tmux
+  dual screens or long streams, pin by hand from a contact sheet. For scroll or stream
+  beats that should keep moving under the narration, set `"play_b": true` and use the
+  beat's `first_out` as `res`.
+- Full detail: `references/02-terminal-demo-factory.md`.
 
-### Terminal demo (VHS in WSL)
-1. Put commands in a batch JSON (`templates/batch.example.json`), then
-   `python scripts/gentape.py batch.json` → `.tape` files. Or copy `templates/branded.tape`.
-2. Record in WSL (quoted heredoc — `wsl.exe` mangles `$`):
-   ```bash
-   wsl.exe -u demo bash -s <<'EOF'
-   cd /home/demo/demo && vhs tour.tape
-   EOF
-   ```
-3. Re-pin beats (timing is non-deterministic), fill a `spec.json`
-   (`templates/spec.example.json`), then `python scripts/vid.py spec.json` to narrate +
-   finish. Detail: `references/02-terminal-demo-factory.md`.
+## Explainer video (Remotion)
+Copy `templates/remotion-diagrams/`, `npm install`, author `src/specs.tsx` + one narration
+mp3 per section (`audioDur` = the mp3's exact ffprobe duration). QA with
+`npx remotion still` first, then render `ExplainerWorking` (IntroA + sections, no outro).
+4K: `--scale=1.5 --crf=10 --concurrency=2`, in the background (about 30 min per 4 min).
+Detail: `references/13-remotion-diagrams.md` and the template README.
 
-### Record a real Claude Code session
-VHS drives `claude` in WSL; `session_vid.py` re-paces the take. Detail:
-`references/03-recording-claude-sessions.md`.
+## Real Claude Code session
+VHS drives `claude` in WSL; `session_vid.py` re-paces the long take from a scenes spec
+(`templates/session.example.json`). Detail: `references/03-recording-claude-sessions.md`.
+
+## Brand intro / banner (brands without an official intro)
+```bash
+BRAND_PROFILE=<p> OUT_DIR=<dir> python scripts/brand_intro.py intro       # or: banner
+WORKDIR=<dir> python scripts/sound_gen.py                                 # intro_audio.wav
+ffmpeg -i <dir>/intro_silent.mp4 -i <dir>/intro_audio.wav -c:v copy -c:a aac -shortest intro.mp4
+GRADE="$(python scripts/brand_config.py grade <p>)" bash scripts/finish.sh intro.mp4 intro_final.mp4 brand
+```
+`python scripts/brand_intro.py intro mock` renders a 6-frame storyboard first. Detail:
+`references/04-brand-intro-and-banner.md`, `references/05-sound-design.md`.
+
+## Finishing (`finish.sh`, always last)
+- `demo` mode for anything recorded (terminal, screen capture): deband only, crystal
+  clear. The user rejected grain and vignette on narrated terminal footage.
+- `brand` mode for motion graphics: deband + the profile's grade + light grain + a soft
+  vignette. Explainers use `GRAIN=2`.
+- Over ~2 minutes or at 4K pass `FAST=1`. Unknown modes are rejected.
+
+## Long jobs
+4K renders and finish passes run far past the Bash tool's 10-minute cap. Start them in
+the background from the outset. If a shell does time out, ffmpeg keeps running: check
+`tasklist` for it and wait, do not start a second pass on the same output.
 
 ## Verification discipline
-**After every render, run `scripts/review.sh <render.mp4>` and gate on its exit code (0 PASS,
-1 FAIL, 2 no-sidecar) before declaring the video done.** It self-reviews the render WITHOUT a
-human: narration-to-visual sync, spillover/double-voice, dead air, loudness/clipping, and
-on-screen text (Tesseract OCR), all keyed off the `<name>.beats.json` sidecar the builders
-(`vid.py`/`session_vid.py`) emit. On PASS it prints one line; on FAIL, one line per failing
-beat. This catches the bugs frame-grabbing misses (audio drifting from its visual, a narration
-spilling onto the next section). Builders also apply `profiles/pronounce.json` to narration
-before edge-tts to fix jargon pronunciation (edge-tts has no phoneme control). A `pron_suspect`
-NOTE still warrants a ~5s human spot-listen - ASR cannot truly hear pronunciation. One-time WSL
-setup and full detail: `references/12-self-review.md`. Run `finish.sh` last, and only after
-`review.sh` passes on the body.
+Run `scripts/review.sh <body.mp4>` on the vid.py/session_vid.py output **before**
+assembling and finishing, and gate on its exit code (0 PASS, 1 FAIL, 2 ERROR). It checks
+narration-to-visual sync, spillover/double-voice, dead air, loudness/clipping, and
+on-screen text (OCR) against the `.beats.json` sidecar. `expect` tokens per beat make the
+OCR check precise. After assembling, check the seams and the true last frame yourself.
+Detail: `references/12-self-review.md`.
 
 ## References
 `references/`: 01 pipeline · 02 terminal-demo-factory · 03 recording-claude-sessions ·
 04 brand-intro-and-banner · 05 sound-design · 06 voice-models · 07 environment-and-gotchas ·
-08 research-report · 09 improvement-plan · 10 style-guide · 11 brand-profiles ·
+08 research-report · 09 improvement-plan (historical) · 10 style-guide · 11 brand-profiles ·
 12 self-review · 13 remotion-diagrams · brand.md.
 
-## Two engines
-- **Pillow + VHS + ffmpeg** (the bulk of this skill): zero extra deps, $0 — the default
-  for terminal/CLI demos and the fallback for everything.
-- **Remotion** (`references/13-remotion-diagrams.md`, `templates/remotion-diagrams/`):
-  React→video for editorial **animated diagram explainers** — adopts the diagram-design
-  language (Instrument Serif + Geist, accent-tint focal nodes) with native animation,
-  slide transitions, and banding-free CSS backgrounds. Remotion is free only for
-  ≤3-employee for-profits (else ~$75/mo); the Pillow path stays the $0 fallback.
-
 ## Default template
-`templates/remotion-diagrams/` is the **default starting point for any brand/product
-explainer video**. The shipped specs are the Trustabl Artifacts Explainer — the house
-reference implementation: an overview intro section that EXPLAINS what the video is for
-(never a bare logo sting), the navy `src/brand.ts` tokens, Instrument Serif + Geist,
-one accent-tint focal node per figure, and `slide()` transitions between sections
-(`fade()` superimposes same-position headers — bookend edges only). Re-map `brand.ts`
-to restyle for another brand. Improve this template over time rather than forking it
-ad hoc, and add new templates beside it (`templates/<name>/`) for new video shapes and
-new products.
+`templates/remotion-diagrams/` is the default starting point for any brand/product
+explainer: the Trustabl Artifacts Explainer system (IntroA bookend, navy `src/brand.ts`
+tokens, Instrument Serif + Geist, one accent-tint focal node per figure, `slide()`
+between sections; `fade()` superimposes same-position headers, so bookend edges only).
+Improve this template rather than forking it ad hoc; add new templates beside it
+(`templates/<name>/`) for new video shapes and products.
 
-**Template versions are code-named and git-tagged** (`template/<codename>-vN`); the
-template directory at HEAD is always the default:
-- **Slipstream (v2, default)** — tag `template/slipstream-v2`. Adds the stateful
-  network language (`src/network.tsx`: FlowEdge particles, live→down state
-  timelines, stat cards, caption beats), two-tone `Header` titles, and the `Spof`
-  slide-deck proving example.
-- **Harbor (v1)** — tag `template/harbor-v1`. The reveal-only Section/spec model.
-  Recover it with: `git checkout template/harbor-v1 -- skills/video-toolkit/templates/remotion-diagrams`.
+Template versions are code-named and git-tagged (`template/<codename>-vN`); the
+directory at HEAD is always the default:
+- **Slipstream (v2, default)**, tag `template/slipstream-v2`: the stateful network
+  language (`src/network.tsx`), two-tone headers, the `Spof` example.
+- **Harbor (v1)**, tag `template/harbor-v1`: the reveal-only Section/spec model.
+  `git checkout template/harbor-v1 -- skills/video-toolkit/templates/remotion-diagrams`.
+Remotion is free only for individuals and companies of up to 3 employees; the VHS and
+Pillow paths stay the $0 route.

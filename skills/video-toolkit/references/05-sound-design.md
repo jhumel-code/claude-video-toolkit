@@ -10,7 +10,7 @@ noise + filters** — no sample library, no licensing. The vibe is
 ## Run
 
 ```bash
-python vo/sound_gen.py        # -> intro_audio.wav (stereo, 48k, matches the intro length)
+WORKDIR=<dir> python scripts/sound_gen.py   # -> <dir>/intro_audio.wav (stereo, 48k, matches the intro length)
 ```
 
 ## Elements (and how they're made)

@@ -43,20 +43,20 @@ Defaults: **ease-out for entrances, ease-in-out for moves, ease-in for exits.** 
 
 **Severity colors (findings):** critical `#FF6B6B` · warning `#FFD166` · info `#4EA8DE`. Color encodes *severity, not branding* — this makes output look like a real CI dashboard. Gradients only on **static** backgrounds, never on moving elements.
 
-## 4. Canonical color grade (final pass)
-```bash
--vf "curves=r='0/0 0.5/0.48 1/1':g='0/0 0.5/0.51 1/1':b='0/0 0.5/0.56 1/1',\
-     eq=contrast=1.06:brightness=-0.02:saturation=0.92,\
-     colorbalance=bs=0.05:bh=0.03"
-```
+## 4. Color grade (final pass)
+The grade is the brand profile's `grade` block, applied by `finish.sh` in `brand` mode
+(`GRADE="$(python scripts/brand_config.py grade <profile>)"`). It must **lift** midtones
+(curves above 0.5, positive `eq` brightness), never darken: the June grade here used
+`brightness=-0.02` and made every video read dark. Recorded footage (terminal, screen
+capture) gets **no** grade: `finish.sh ... demo`.
 
 ## 5. Effects "restraint budget"
 
 | Effect | Allowed? | Ceiling |
 |---|---|---|
-| Banding fix (deband+dither) | **Required** | `deband=thr=0.025:range=12:blur=true` + `noise=alls=5:allf=u` |
-| Film grain (luma) | Yes, subtle | `noise=c0s=18:c0f=t+u` (≤22) |
-| Vignette | Yes, subtle | `vignette=PI/5` |
+| Banding fix (deband+dither) | **Required** | finish.sh's `deband` (both modes) |
+| Film grain (luma) | Motion graphics only | `GRAIN=6` default, `GRAIN=2` for explainers; never on terminal footage |
+| Vignette | Motion graphics only | `VIG=PI/16`. The angle runs opposite to intuition: a LARGER angle crushes the corners (`PI/5` darkened a whole 4K render). Test one frame before a full pass. |
 | Glow/bloom | Sparingly | one soft glow on the shield only, `gblur sigma≤18`, screen blend opacity ≤0.30 |
 | Chromatic aberration | Rarely | first ~4 frames only, `rgbashift` ≤2px; never sustained |
 | Particles | Thin | ~30 max, low brightness |
@@ -72,35 +72,33 @@ Generate timings from `edge-tts --write-subtitles`.
 
 ## 7. Terminal demo spec
 
-**VHS theme (branded):**
-```
-Set Width 2400
-Set Height 1200
-Set FontFamily "JetBrainsMono Nerd Font Mono"
-Set FontSize 36
-Set LineHeight 1.2
-Set Framerate 30
-Set CursorBlink false
-Set WindowBar Colorful
-Set WindowBarSize 50
-Set BorderRadius 10
-Set Margin 40
-Set MarginFill "#070E1A"
-Set Padding 24
-Set Theme { "name":"Trustabl","background":"#0D1B2A","foreground":"#E8EBF0",\
-  "green":"#51C1B5","cyan":"#51C1B5","red":"#FF6B6B","yellow":"#FFD166","blue":"#4EA8DE",\
-  "brightGreen":"#6ECFC4","cursor":"#51C1B5","selection":"#1A3A5C" }
-```
-**Cadence:** type @35ms → `Set PlaybackSpeed 2.0` through scan progress → `1.0` + hold ~4s on findings. Record 2× and downscale. **Zoom:** supersample (`scale=7680:4320:flags=lanczos`) before `zoompan`; anchor `x=0` on text.
+The terminal look is the brand profile's `terminal` block (canvas size, font size,
+padding, margin and margin colour, window bar, typing speed, theme); `gentape.py` writes
+it into every tape and `templates/demo.example.tape` shows the result for Trustabl:
+2560x1440 native (the video canvas, so nothing is scaled), FontSize 28, navy
+`#0D1B2A` background, `#E8EBF0` text, teal `#51C1B5` cursor, `WindowBar Colorful`,
+`Margin 40` on `#070E1A` (the canvas the official intro sits on), `BorderRadius 12`.
+The WSL font is DejaVu Sans Mono (no JetBrains font is installed there).
+**Cadence:** type at 35 ms, a 2 s pause before Enter, hold 4 s or more on results.
+**Zoom:** none on terminal footage; if a static hold ever needs one, anchor `x=0`.
 
 ## 8. Sound spec
 
-- **Voice:** `en-US-AvaNeural` (English-locked) — never `*MultilingualNeural`. Pronounce coined words by **respelling the TTS input** ("Trustable"); keep on-screen text correct. Pauses = ffmpeg silence between clips, not SSML (SSML is blocked; only rate/pitch/volume work). Presenter cadence ≈ `--rate=+8% --pitch=-3Hz`; emphasis lines `--rate=-10% --pitch=-6Hz`.
+- **Voice:** the profile's English-locked voice and rate (Trustabl: `en-US-AvaNeural`,
+  `--rate=-7%`, one token). Never `*MultilingualNeural`. Pronounce coined words by
+  **respelling the TTS input** ("Trustable") through the pronounce map; keep on-screen
+  text correct. Pauses are ffmpeg silence between clips, not SSML (only
+  rate/pitch/volume work).
 - **Music beds:** warm pads via stacked-harmonic `aevalsrc` + `lowpass` + attack/release envelope; risers/blips via SoX `pl`. Bed under VO at −18dB vs voice. No lyrics.
 - **Mastering:** music bed `loudnorm I=-15:TP=-1.5`; under-VO bed `I=-17`. Findings reveal = one short confirmation ping (CI-green-check feel).
 - **You are the ear:** verify by clip durations + `silencedetect`; human confirms tone.
 
-## 9. Canonical `spec.json` schema (director → renderer)
+## 9. Proposed scene-spec schema (not built)
+
+A design for a single `render_spec.py` that would render title cards, terminal replays
+and CTA cards from one spec. It does not exist; the working specs are vid.py's
+(`templates/spec.example.json`), session_vid.py's, and the Remotion template's
+`specs.tsx`.
 ```json
 {
   "video_id": "string", "duration_s": 45, "fps": 30, "resolution": [1920,1080],
@@ -120,11 +118,12 @@ Set Theme { "name":"Trustabl","background":"#0D1B2A","foreground":"#E8EBF0",\
   "caption_srt": "captions/<id>.srt"
 }
 ```
-Scene types: `title_card`, `terminal_replay`, `findings_card`, `cta_card`. An LLM writes this; `render_spec.py` renders it deterministically.
+Scene types: `title_card`, `terminal_replay`, `findings_card`, `cta_card`.
 
 ## 10. Determinism & encode
 
-30fps · render 2× then downscale lanczos · final encode:
+For Pillow motion graphics: 30fps · render 2× then downscale lanczos · final encode
+(`finish.sh`'s default; terminal demos are 25fps at their native canvas):
 ```bash
 -threads 1 -fflags +bitexact -c:v libx264 -x264-params threads=1:sliced-threads=0 \
 -preset slow -crf 16 -pix_fmt yuv420p
@@ -133,4 +132,4 @@ Seed all numpy RNG. Avoid `minterpolate`. Carry intermediates 10-bit (`yuv444p10
 
 ## Narrative defaults
 
-Five-beat arc: **hook (≤5s) → problem → product → proof → CTA**; value in the first 3–5s. Intro/sting **10–15s** (no voice, no cuts). Demo **90–120s** (tour ≤3min). Evidence before claims; show real `trustabl` output before any voiceover assertion.
+Five-beat arc: **hook (≤5s) → problem → product → proof → CTA**; value in the first 3–5s. Open on the brand's official intro when it has one (Trustabl: the 4.3 s logo bookend, then straight into the demo; no outro on demos). The opening narration, or an explainer's overview section, must say what the video is for: a logo alone is not an intro. Demo **90–120s** (tour ≤3min). Evidence before claims; show real `trustabl` output before any voiceover assertion. No structural labels ("Act one", "Part 2") in narration.
