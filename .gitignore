@@ -6,8 +6,13 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Remotion template: npm install + renders done in place
+node_modules/
+skills/video-toolkit/templates/*/out/
+
 # Render working dirs + outputs (created at runtime via WORKDIR / OUT_DIR)
 /out/
+_tts/
 _snd/
 bi_intro/
 bi_banner/
@@ -16,6 +21,7 @@ _pv/
 _intro_*/
 *_silent.mp4
 intro_audio.wav
-_logo_brand.png
+_logo_*.png
+bi_*_mock.png
 *.tmp
 *.log
