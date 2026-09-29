@@ -9,7 +9,8 @@ licensed under the SIL Open Font License 1.1. Full text:
 `skills/video-toolkit/fonts/OFL.txt`.
 
 ## Example brand assets
-`skills/video-toolkit/assets/` (logo, banners) are the **Trustabl** brand's assets,
+`skills/video-toolkit/assets/` (logo, banners, and `trustabl-intro.mp4`, the official
+intro rendered from the Remotion template) are the **Trustabl** brand's assets,
 included only as the worked example profile. Swap in your own brand's assets; do not
 reuse Trustabl's marks for unrelated projects.
 

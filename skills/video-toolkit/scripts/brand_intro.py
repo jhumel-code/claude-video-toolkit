@@ -9,6 +9,10 @@ SS = 2
 w,h = W*SS, H*SS
 FPS=25; DUR=6.4; N=int(DUR*FPS)
 P = load_profile()                                  # BRAND_PROFILE env (default "trustabl")
+if MODE == "intro" and P.get("intro_clip") and os.environ.get("FORCE_GENERATED_INTRO") != "1":
+    sys.exit(f"{P['name']} has an official intro: {P['abs']('intro_clip')}\n"
+             "Use it (scripts/assemble.py prepends it by default) instead of generating one.\n"
+             "Set FORCE_GENERATED_INTRO=1 only if the user explicitly asks for a generated intro.")
 OUTDIR = os.environ.get("OUT_DIR", ".")
 os.makedirs(OUTDIR, exist_ok=True)
 FRM = os.path.join(OUTDIR, f"bi_{MODE}"); os.makedirs(FRM, exist_ok=True)
@@ -21,7 +25,7 @@ WMGLOW=tuple(int(c*0.55) for c in TEAL)
 BG_DEEP=list(P["palette"]["bg_deep"]); BG_LIFT=list(P["palette"]["bg_lift"])
 CAPS=list(P["pills"]); WMTEXT=P["wordmark"]; TAGLINE=P["tagline"]
 FONTS_DIR=P["abs"]("fonts_dir"); FONT_FAMILY=P.get("font_family","Poppins")
-_logo_trim=os.path.join(OUTDIR,"_logo_brand.png")
+_logo_trim=os.path.join(OUTDIR,f"_logo_{P['_name']}.png")   # per brand: never reuse another brand's logo
 if not os.path.exists(_logo_trim):
     _im=Image.open(P["abs"]("logo")).convert("RGBA"); _im.crop(_im.getbbox()).save(_logo_trim)
 LOGO=Image.open(_logo_trim).convert("RGBA")
@@ -157,10 +161,10 @@ if __name__=="__main__":
         ims=[frame(t).resize((W//3,H//3)) for t in ts]
         sh=Image.new("RGB",(W//3*3,H//3*2))
         for i,im in enumerate(ims): sh.paste(im,((i%3)*(W//3),(i//3)*(H//3)))
-        sh.save(BASE+"plugin-demo/bi_mock.png"); print("mock saved t=",ts)
+        mock=os.path.join(OUTDIR,f"bi_{MODE}_mock.png"); sh.save(mock); print("mock saved",mock,"t=",ts)
     else:
         for k in range(N):
             frame(k/FPS).save(f"{FRM}/f{k:04d}.png")
             if k%25==0: print("frame",k)
-        subprocess.run(["ffmpeg","-v","error","-y","-framerate",str(FPS),"-i",f"{FRM}/f%04d.png","-c:v","libx264","-crf","16","-preset","slow","-pix_fmt","yuv420p","-r",str(FPS),OUT],check=True)
+        subprocess.run(["ffmpeg","-nostdin","-v","error","-y","-framerate",str(FPS),"-i",f"{FRM}/f%04d.png","-c:v","libx264","-crf","16","-preset","slow","-pix_fmt","yuv420p","-r",str(FPS),OUT],check=True)
         print("DONE ->",OUT)
