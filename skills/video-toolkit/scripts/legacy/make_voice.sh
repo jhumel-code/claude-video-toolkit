@@ -5,7 +5,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   # resolve before cd, to f
 cd "${WORKDIR:-$PWD}/vo"
 V="$1"; P="$2"
 # apply profiles/pronounce.json (jargon -> spoken form) before edge-tts; edge-tts has no phoneme control
-gen() { local t; t="$(python3 "$HERE/pronounce.py" "$2")"; python -m edge_tts --voice "$V" --text "$t" --write-media "${P}_$1.mp3" >/dev/null 2>&1; printf "%s %.1f\n" "$1" "$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${P}_$1.mp3)"; }
+gen() { local t; t="$(python3 "$HERE/../pronounce.py" "$2")"; python -m edge_tts --voice "$V" --text "$t" --write-media "${P}_$1.mp3" >/dev/null 2>&1; printf "%s %.1f\n" "$1" "$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${P}_$1.mp3)"; }
 
 # --- INTRO (3 clips; holds rebuilt to fit) ---
 gen r01a "Trustabl is a security scanner for AI agents. It reads your agent's source code without ever running it, and finds the security and reliability risks hiding inside."
