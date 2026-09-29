@@ -111,7 +111,8 @@ always the current default:
 
 | Codename | Tag | What it is |
 |---|---|---|
-| **Slipstream** (v2, default) | `template/slipstream-v2` | Adds the stateful network language: curved flow edges with travelling particles, nodes that flip live→down on a narration-synced timeline, stat cards, caption beats, two-tone headers, and the `Spof` slide-deck example. |
+| **Headway** (v3, default) | `template/headway-v3` | Narration as data: the script lives in `narration.json`, written to sound like a person, voiced by `scripts/voice.py` (Kokoro by default), with every section length and reveal time taken from the measured audio. |
+| **Slipstream** (v2) | `template/slipstream-v2.1`, `template/slipstream-v2` | Adds the stateful network language: curved flow edges with travelling particles, nodes that flip live→down on a narration-synced timeline, stat cards, caption beats, two-tone headers, and the `Spof` slide-deck example. |
 | **Harbor** (v1) | `template/harbor-v1` | The original reveal-only diagram explainer: data-spec sections (nodes/arrows/code cards), navy skin, Instrument Serif + Geist. |
 
 To use an older version without rolling back the repo:

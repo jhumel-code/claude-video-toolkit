@@ -84,11 +84,10 @@ bash scripts/finish.sh out/joined.mp4 final.mp4 demo
 - Full detail: `references/02-terminal-demo-factory.md`.
 
 ## Explainer video (Remotion)
-v3 "Headway" (`templates/remotion-diagrams-v3/`, beside v2 until approved) keeps the script
-in `narration.json` and voices it with `python scripts/voice.py <project>`, which writes
-the audio plus every duration and sentence cue the specs use. Otherwise: copy
-`templates/remotion-diagrams/`, `npm install`, author `src/specs.tsx` + one narration
-mp3 per section (`audioDur` = the mp3's exact ffprobe duration). QA with
+Copy `templates/remotion-diagrams/` (Headway v3), `npm install`, write the script in
+`narration.json`, and voice it with `python scripts/voice.py <project>`: it lints the
+script, writes the audio, and writes every section duration and sentence cue the specs
+use (`audioDur: NARRATION.<id>.dur`, reveals via `cue(id, n)`). Author `src/specs.tsx`. QA with
 `npx remotion still` first, then render `ExplainerWorking` (IntroA + sections, no outro).
 4K: `--scale=1.5 --crf=10 --concurrency=2`, in the background (about 30 min per 4 min).
 Detail: `references/13-remotion-diagrams.md` and the template README.
@@ -143,9 +142,13 @@ Improve this template rather than forking it ad hoc; add new templates beside it
 
 Template versions are code-named and git-tagged (`template/<codename>-vN`); the
 directory at HEAD is always the default:
-- **Slipstream (v2, default)**, tag `template/slipstream-v2`: the stateful network
-  language (`src/network.tsx`), two-tone headers, the `Spof` example.
+- **Headway (v3, default)**, tag `template/headway-v3`: narration as data
+  (`narration.json` voiced by `voice.py`), a script written for the ear, and every
+  duration and reveal time taken from the measured audio.
+- **Slipstream (v2)**, tags `template/slipstream-v2.1` (with the 2026-09-29 fixes) and
+  `template/slipstream-v2`: the stateful network language (`src/network.tsx`), two-tone
+  headers, the `Spof` example; hand-typed durations.
 - **Harbor (v1)**, tag `template/harbor-v1`: the reveal-only Section/spec model.
-  `git checkout template/harbor-v1 -- skills/video-toolkit/templates/remotion-diagrams`.
+Recover one with `git checkout <tag> -- skills/video-toolkit/templates/remotion-diagrams`.
 Remotion is free only for individuals and companies of up to 3 employees; the VHS and
 Pillow paths stay the $0 route.

@@ -11,6 +11,7 @@ import { fade } from '@remotion/transitions/fade';
 import { Bg, Reveal, Header } from './components';
 import { FontLoader } from './fonts';
 import { BRAND, FPS, K, W, H, CW, CH } from './brand';
+import { NARRATION } from './narration.gen';
 import { FlowEdge, RingNode, AppNode, SourceCard, StatCard, TagPill, CaptionPill, EdgeLayer, rgba } from './network';
 
 const F = (s: number) => Math.round(s * FPS);
@@ -33,8 +34,8 @@ const Head: React.FC = () => (
     sub="when one shared edge takes down half the internet" />
 );
 
-// measured narration durations (ffprobe) + breathing gaps
-const D1 = 2.71, D2 = 3.0, D3 = 4.82, D4 = 5.54;
+// narration clip durations (voice.py writes them to narration.gen.ts) + breathing gaps
+const D1 = NARRATION.spof_1.dur, D2 = NARRATION.spof_2.dur, D3 = NARRATION.spof_3.dur, D4 = NARRATION.spof_4.dur;
 const B1 = 0.6, B2 = B1 + D1 + 0.4;            // scene 1 beats
 const S1 = B2 + D2 + 1.3;
 const C1 = 0.75, C2 = C1 + D3 + 0.4;           // scene 2 beats (transition eats ~0.7s)

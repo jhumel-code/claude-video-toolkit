@@ -1,8 +1,10 @@
 # Remotion animated diagram explainer (template)
 
-> **Codename: Slipstream (v2) — the default template.** Versions are git-tagged:
-> `template/slipstream-v2` (this one; stateful network primitives, slide-deck Spof
-> example, two-tone headers) and `template/harbor-v1` (its reveal-only predecessor).
+> **Codename: Headway (v3), the default template.** The narration is data
+> (`narration.json`), written to sound like a person and voiced by `scripts/voice.py`
+> (Kokoro by default), and every section length and reveal time comes from the measured
+> audio. Older versions are git-tagged: `template/slipstream-v2.1` (v2 with the
+> 2026-09-29 fixes), `template/slipstream-v2`, `template/harbor-v1`.
 
 A **Remotion**-based engine for narrated, animated, branded diagram explainers — the
 "what are these artifacts and why do they matter" style video. Each section is a
@@ -47,22 +49,23 @@ QA with stills first, then render once.
 skin (same token names in `src/brand.ts`); anything else throws.
 
 ## Author your video
-1. Write narration and synthesize one mp3 per section into `public/audio/sy_<id>.mp3`
-   with ONE edge-tts call each, using the brand voice and rate and the pronounce map
-   applied to the text (for Trustabl: `en-US-AvaNeural`, `--rate=-7%`, passed as one
-   token). The toolkit's `scripts/pronounce.py "<text>"` prints the respelled text
-   (shared jargon map plus the `BRAND_PROFILE`'s own respellings).
-2. Edit `src/specs.tsx`, one `Spec` per section: `eyebrow`, `title`, `logo`,
-   `audio`, `audioDur` (seconds), and ordered `groups[]` (each a reveal step holding
-   `nodes` / `arrows` / `pills` / `mono`). Reveals auto-pace across `audioDur` and
-   finish by ~80% so nothing pops in at the cut. **`audioDur` must equal the mp3's
-   ffprobe duration exactly** (it sets the section length); re-check every section
-   after any audio change. `focalAt` is a voiceover timestamp, so re-verify it when
-   narration is re-cut.
-3. Put logos in `public/logos/<name>.png`. Brand colors/fonts live in `src/brand.ts`.
+1. Write the script in `narration.json` (one entry per section, blank lines between
+   paragraphs), following the toolkit's `references/14-narration-voice.md`: short
+   sentences, contractions, one list at most, and name each thing just before it appears.
+2. Voice it: `python <toolkit>/scripts/voice.py .` lints the script, voices every sentence
+   (engine and voice from `narration.json`'s `tts`, else the brand profile), writes
+   `public/audio/*.mp3`, and writes `src/narration.gen.ts` with each section's exact
+   duration and sentence start times. Re-run it after any edit; unchanged sentences come
+   from the cache. `--only scan,opa` re-voices just those sections.
+3. Edit `src/specs.tsx`, one `Spec` per section. `audioDur: NARRATION.<id>.dur` sets the
+   section length. Tie reveals to what's being said with `cue(id, n, frac)` (the start of
+   sentence n, plus a fraction of it): `focalAt: cue('contract', 0, 0.75)` for the focal
+   group, `atSec: cue('scan', 5)` for any other group. Groups without one spread out
+   evenly and finish by ~80% of the voiceover. Never type a duration by hand.
+4. Put logos in `public/logos/<name>.png`. Brand colors/fonts live in `src/brand.ts`.
    No em dashes in on-screen text.
-4. `Root.tsx` registers each section plus the `Explainer` / `ExplainerWorking`
-   chains (slide between sections, fade only at the bookend edges).
+5. `Root.tsx` registers each section plus the `Explainer` / `ExplainerWorking` chains
+   (slide between sections, fade only at the bookend edges).
 
 ## Network primitives
 `src/network.tsx` holds the stateful diagram language for network/topology

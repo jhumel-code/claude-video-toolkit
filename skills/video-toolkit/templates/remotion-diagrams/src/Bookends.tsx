@@ -3,9 +3,10 @@ import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, interpolate
 import { Bg } from './components';
 import { FontLoader } from './fonts';
 import { BRAND, LIGHT_SKIN, FPS, K } from './brand';
+import { NARRATION } from './narration.gen';
 
 export const introFrames = Math.round((2.946 + 1.35) * FPS); // SFX ident + short logo hold (no narration)
-export const outroFrames = Math.round((0.5 + 8.16 + 1.5) * FPS);
+export const outroFrames = Math.round((0.5 + NARRATION.outro.dur + 1.5) * FPS);
 
 const center: React.CSSProperties = {
   position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',

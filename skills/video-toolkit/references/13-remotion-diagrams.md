@@ -28,9 +28,9 @@ animation; use Pillow when you want zero extra dependencies.
 - HTML/SVG means the diagram-design language drops in directly.
 
 ## Workflow
-See `templates/remotion-diagrams/README.md`. In short: drop narration mp3s in
-`public/audio/` (one edge-tts call per section, brand voice and rate, pronounce map
-applied), set each spec's `audioDur` to the mp3's exact duration, edit `src/specs.tsx`,
+See `templates/remotion-diagrams/README.md`. In short: write the script in
+`narration.json`, run `python scripts/voice.py <project>` (audio + `narration.gen.ts`
+with every duration and sentence cue), edit `src/specs.tsx`,
 QA with `npx remotion still ... --scale=0.5`, then
 `npx remotion render src/index.ts ExplainerWorking out/explainer.mp4` (IntroA + sections,
 no outro: the default shape; `Explainer` adds the branded outro).
@@ -52,7 +52,11 @@ original light skin (`REMOTION_SKIN=light`); any other value throws. Bookends:
 
 ## Template codenames
 The template is versioned by codename + git tag; the directory at HEAD is the
-default. **Slipstream (v2, default)** = everything below (`template/slipstream-v2`).
+default. **Headway (v3, default)** (`template/headway-v3`) = Slipstream plus narration as
+data: `narration.json` voiced by `scripts/voice.py`, which writes `narration.gen.ts` so
+`audioDur` and every reveal (`cue(id, n, frac)`) follow the measured audio (see
+`14-narration-voice.md`). **Slipstream (v2)** (`template/slipstream-v2.1`, with the
+2026-09-29 fixes; `template/slipstream-v2`) = everything below with hand-typed timings.
 **Harbor (v1)** = the reveal-only Section/spec model before the network primitives
 (`template/harbor-v1`).
 
