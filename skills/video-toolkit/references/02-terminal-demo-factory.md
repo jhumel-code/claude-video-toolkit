@@ -82,9 +82,11 @@ output raises it in jumps. The cursor blink is flattened first. Per beat:
 - `end` stops any playback at the beat's own last frame, so a short hold can never freeze
   on the next command being typed. Keep the value beats.py wrote.
 - Optional per beat: `footage` (a second recording), `expect_a`, `scroll_top`.
-- Top level: `brand`, `voice`, `rate`, `canvas`, `fit` (`pad` default, `scale` to
-  upscale small legacy footage), `pad_color`, `gap`. Voice and rate default to the
-  brand profile; multilingual voices are refused.
+- Top level: `brand`, `tts` (the voice engine, e.g. `{"engine": "kokoro", "voice":
+  "af_heart", "speed": 0.93}`; see `14-narration-voice.md`), `voice`/`rate` (edge-tts
+  shorthand), `canvas`, `fit` (`pad` default, `scale` to upscale small legacy footage),
+  `pad_color`, `gap`. The voice defaults to the brand profile; multilingual voices are
+  refused. Every line is linted before it's voiced (warnings print, errors stop).
 - Output: `<outdir>/<name>.mp4` at the canvas size, plus `<name>.beats.json` for
   review.sh. Each clip is encoded once; narration sits at the measured clip boundaries.
   TTS clips are cached in `WORKDIR/_tts/`, so re-running after a pin change is fast.

@@ -53,9 +53,11 @@ Paths below are relative to this skill's directory. Read the matching guide in
    text; its `pron_suspect` notes mean a human spot-listens that beat.
 6. **Verify frames yourself** (`ffmpeg -ss N -i v.mp4 -frames:v 1 f.png`). Vision
    subagents hallucinate on runs of near-identical terminal frames.
-7. **Narration:** no structural labels ("Act one", "Part 2", "Step 3"); introduce each beat
-   before it lands (the intent line plays while the command types); no em dashes in any
-   on-screen text; keep claims to what the footage actually shows.
+7. **Narration sounds like a person:** short sentences, contractions, "you", one list at
+   most, no "X: the Y" reveals or tagline closers, no structural labels ("Act one",
+   "Part 2"), no em dashes. Introduce each beat before it lands, and keep claims to what
+   the footage shows. The builders lint every line (`scripts/narration_lint.py`) before
+   voicing it; `references/14-narration-voice.md` has the rules and the voice engines.
 8. **VHS only in WSL**, as `demo`, with absolute `/home/demo/demo/` paths, and a tape's
    `Output` must be relative. Live timing changes on every take: re-pin after re-recording.
 
@@ -82,7 +84,10 @@ bash scripts/finish.sh out/joined.mp4 final.mp4 demo
 - Full detail: `references/02-terminal-demo-factory.md`.
 
 ## Explainer video (Remotion)
-Copy `templates/remotion-diagrams/`, `npm install`, author `src/specs.tsx` + one narration
+v3 "Headway" (`templates/remotion-diagrams-v3/`, beside v2 until approved) keeps the script
+in `narration.json` and voices it with `python scripts/voice.py <project>`, which writes
+the audio plus every duration and sentence cue the specs use. Otherwise: copy
+`templates/remotion-diagrams/`, `npm install`, author `src/specs.tsx` + one narration
 mp3 per section (`audioDur` = the mp3's exact ffprobe duration). QA with
 `npx remotion still` first, then render `ExplainerWorking` (IntroA + sections, no outro).
 4K: `--scale=1.5 --crf=10 --concurrency=2`, in the background (about 30 min per 4 min).
@@ -126,7 +131,7 @@ Detail: `references/12-self-review.md`.
 `references/`: 01 pipeline · 02 terminal-demo-factory · 03 recording-claude-sessions ·
 04 brand-intro-and-banner · 05 sound-design · 06 voice-models · 07 environment-and-gotchas ·
 08 research-report · 09 improvement-plan (historical) · 10 style-guide · 11 brand-profiles ·
-12 self-review · 13 remotion-diagrams · brand.md.
+12 self-review · 13 remotion-diagrams · 14 narration-voice · brand.md.
 
 ## Default template
 `templates/remotion-diagrams/` is the default starting point for any brand/product
