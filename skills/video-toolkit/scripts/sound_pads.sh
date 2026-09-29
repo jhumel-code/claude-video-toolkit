@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # sound_pads.sh - richer FREE, deterministic music beds + SFX.
 #   Pads via ffmpeg aevalsrc (stacked harmonics + attack/release + lowpass warmth).
-#   Riser/blip via sox Karplus-Strong (pl). See docs/10-style-guide.md S8.
+#   Riser/blip via sox Karplus-Strong (pl). See references/10-style-guide.md S8.
 # Usage:  bash sound_pads.sh [outdir]
 set -euo pipefail
 OUT="${1:-.}"; SR=48000; mkdir -p "$OUT"
-ff(){ ffmpeg -v error -y "$@"; }
+ff(){ ffmpeg -nostdin -v error -y "$@"; }
 # Am pad (A2 E3 A3 C4): attack (1-exp) + release (exp tail) + lowpass
 ff -f lavfi -i "aevalsrc='0.07*(sin(2*PI*110*t)+sin(2*PI*164.81*t)+sin(2*PI*220*t)+sin(2*PI*261.63*t))*(1-exp(-t/0.4))*exp(-max(t-6,0)/1.5)':d=8:s=${SR},lowpass=f=900:poles=2" -ac 2 "$OUT/pad_Am.wav"
 # Dm resolution pad (D3 A3 D4 F4)

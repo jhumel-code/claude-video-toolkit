@@ -3,7 +3,10 @@
 #   [optional upscale] -> deband+dither (fixes dark-gradient banding) ->
 #   optional film-grain -> optional brand grade -> optional vignette ->
 #   bit-exact single-thread x264 encode.
-#   See docs/10-style-guide.md and docs/09-improvement-plan.md.
+#   See references/10-style-guide.md. Mode choice: `demo` for anything recorded
+#   (terminal, screen capture), `brand` for motion graphics (intros, banners).
+#   Over ~2 min or at 4K, pass FAST=1 and run it in the background: a 4K60
+#   pass can take close to an hour.
 #
 # Usage:  bash finish.sh <in.mp4> [out.mp4] [mode]
 #   mode = brand (default) -> color grade + light grain + soft vignette
@@ -31,6 +34,7 @@ set -euo pipefail
 IN="${1:?usage: bash finish.sh <in.mp4> [out.mp4] [mode]}"
 OUT="${2:-${IN%.*}_finished.mp4}"
 MODE="${3:-brand}"
+case "$MODE" in brand|demo) ;; *) echo "finish.sh: mode must be 'brand' or 'demo', got '$MODE'" >&2; exit 2;; esac
 CRF=18
 DEBAND="deband=1thr=0.02:2thr=0.02:3thr=0.02:4thr=0.02:range=12:blur=1"
 # Default grade LIFTS midtones (curves > 0.5) and adds positive brightness so
@@ -66,11 +70,11 @@ AOPT=(); [ -n "$HASAUDIO" ] && AOPT=(-c:a copy)
 # multithreaded medium preset for large 4K/60 renders (not bit-exact) so a
 # high-resolution finishing pass completes in reasonable time.
 if [ "${FAST:-0}" = "1" ]; then
-  ffmpeg -v error -y -i "$IN" -vf "$VF" \
+  ffmpeg -nostdin -v error -y -i "$IN" -vf "$VF" \
     -c:v libx264 -preset medium -crf "$CRF" -pix_fmt yuv420p \
     "${AOPT[@]}" "$OUT"
 else
-  ffmpeg -v error -y -i "$IN" -vf "$VF" \
+  ffmpeg -nostdin -v error -y -i "$IN" -vf "$VF" \
     -threads 1 -fflags +bitexact \
     -c:v libx264 -x264-params "threads=1:sliced-threads=0" \
     -preset slow -crf "$CRF" -pix_fmt yuv420p \

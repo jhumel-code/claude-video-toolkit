@@ -5,7 +5,7 @@ import subprocess, os
 # 5 soft blips as capability pills appear (4.4-4.9); pad tail to 6.4.
 T=os.environ.get("WORKDIR", ".").rstrip("/")+"/_snd"; os.makedirs(T,exist_ok=True)
 OUT=os.environ.get("WORKDIR", ".").rstrip("/")+"/intro_audio.wav"; SR=48000; DUR=6.4
-def ff(a): subprocess.run(["ffmpeg","-v","error","-y"]+a,check=True)
+def ff(a): subprocess.run(["ffmpeg","-nostdin","-v","error","-y"]+a,check=True)
 def sine(f,d): return f"sine=frequency={f}:sample_rate={SR}:duration={d}"
 def lav(e,d): return f"aevalsrc=exprs='{e}':s={SR}:d={d}"
 
