@@ -9,7 +9,7 @@ description: >
   template for animated diagram explainers, and Pillow motion graphics. Brand-agnostic via
   JSON brand profiles (Trustabl ships as the example).
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Claude Video Toolkit

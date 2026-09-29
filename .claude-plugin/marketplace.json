@@ -9,7 +9,7 @@
       "name": "claude-video-toolkit",
       "source": "./",
       "description": "Produce narrated terminal/CLI demo videos, animated diagram explainers, and brand intros from the command line: deterministic, free (VHS + edge-tts + ffmpeg + Pillow, plus a Remotion template), and brand-agnostic via JSON brand profiles.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "license": "MIT",
       "keywords": [
         "video",
