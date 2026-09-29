@@ -1,9 +1,9 @@
 """narrate.py - the shared engine behind the narrated-video builders (vid.py, session_vid.py).
 
 The house rules live here once, so the builders cannot drift apart again:
-  - the voice comes from the spec's `tts` block, else the brand profile's `tts` block,
-    else edge-tts with the spec/profile `voice` and `rate` (tts_engines.py voices it:
-    edge, kokoro or chatterbox). *MultilingualNeural voices are refused: they
+  - the voice comes from the spec's `tts` block, else the spec's edge-tts `voice`/`rate`,
+    else the brand profile's `tts` block, else edge-tts with the profile `voice` and
+    `rate` (tts_engines.py voices it: edge, kokoro or chatterbox). *MultilingualNeural voices are refused: they
     code-switch on coined words.
   - narration is respelled through the pronounce map (shared jargon + brand) before TTS,
     and voiced sentences are cached by voice settings + spoken text, so re-runs are fast
@@ -42,6 +42,15 @@ def dur(path):
          "-of", "default=noprint_wrappers=1:nokey=1", path]).decode().strip())
 
 
+def pick_tts(spec, prof, voice, rate):
+    """A spec's own choice (tts block, or edge voice/rate) beats the profile's tts block."""
+    if spec.get("tts"):
+        return dict(spec["tts"])
+    if prof.get("tts") and not (spec.get("voice") or spec.get("rate")):
+        return dict(prof["tts"])
+    return {"engine": "edge", "voice": voice, "rate": rate}
+
+
 class Build:
     def __init__(self, spec):
         self.spec = spec
@@ -60,8 +69,7 @@ class Build:
             sys.exit(f"refusing voice {self.voice}: multilingual voices code-switch on coined "
                      f"words. Use an English-locked voice such as {DEFAULT_VOICE}.")
         self.rate = spec.get("rate") or prof.get("rate") or DEFAULT_RATE
-        self.tts_cfg = dict(spec.get("tts") or prof.get("tts")
-                            or {"engine": "edge", "voice": self.voice, "rate": self.rate})
+        self.tts_cfg = pick_tts(spec, prof, self.voice, self.rate)
         self.pmap = load_map(brand=spec.get("brand"))
         if spec.get("canvas"):
             self.canvas = tuple(int(v) for v in spec["canvas"].lower().split("x"))

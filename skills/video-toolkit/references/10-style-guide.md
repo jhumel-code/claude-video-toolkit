@@ -84,8 +84,9 @@ The WSL font is DejaVu Sans Mono (no JetBrains font is installed there).
 
 ## 8. Sound spec
 
-- **Voice:** the profile's English-locked voice and rate (Trustabl: `en-US-AvaNeural`,
-  `--rate=-7%`, one token). Never `*MultilingualNeural`. Pronounce coined words by
+- **Voice:** the profile's `tts` block (Trustabl: Kokoro `af_heart`, speed 0.93; see
+  `14-narration-voice.md`). On edge-tts, an English-locked voice with the rate as one
+  token (`--rate=-7%`). Never `*MultilingualNeural`. Pronounce coined words by
   **respelling the TTS input** ("Trustable") through the pronounce map; keep on-screen
   text correct. Pauses are ffmpeg silence between clips, not SSML (only
   rate/pitch/volume work).

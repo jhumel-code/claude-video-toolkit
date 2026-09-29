@@ -46,9 +46,11 @@ Paths below are relative to this skill's directory. Read the matching guide in
    Never a Pillow slideshow of fake terminal frames unless the user asks for one.
 3. **Native pixels.** Record terminals at the canvas size (gentape.py does, from the
    profile). The builders pad, never upscale or stretch, footage that fits the canvas.
-4. **English-locked voice** at the brand rate (Trustabl: `en-US-AvaNeural`, `-7%`). The
-   builders read both from the profile and refuse `*MultilingualNeural` voices, which
-   code-switch on coined words. Respelling cannot fix that; the model is the cause.
+4. **The brand's voice** comes from the profile's `tts` block (Trustabl: Kokoro `af_heart`,
+   speed 0.93, chosen by ear on 2026-09-29; engines and setup in
+   `references/14-narration-voice.md`). edge-tts is the fallback and must be
+   English-locked: `*MultilingualNeural` voices are refused because they code-switch on
+   coined words, which respelling cannot fix.
 5. **You cannot hear audio.** `review.sh` checks sync, spillover, loudness and on-screen
    text; its `pron_suspect` notes mean a human spot-listens that beat.
 6. **Verify frames yourself** (`ffmpeg -ss N -i v.mp4 -frames:v 1 f.png`). Vision

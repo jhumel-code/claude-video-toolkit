@@ -2,8 +2,8 @@
 
 A profile is profiles/<name>.json. Pick one via the BRAND_PROFILE env var
 (default "trustabl"). Brand-specific values (wordmark, palette, pills, tagline,
-logo, fonts, grade, voice, rate, pronounce, intro_clip, terminal) live in the
-profile; the scripts are brand-agnostic.
+logo, fonts, grade, tts, voice, rate, pronounce, intro_clip, terminal) live in
+the profile; the scripts are brand-agnostic.
 
 CLI:
   python brand_config.py show  [name]   # summary
@@ -53,7 +53,8 @@ if __name__ == "__main__":
         print(f"pills={p['pills']}")
         print(f"accent={p['palette']['accent']}  bg_deep={p['palette']['bg_deep']}")
         print(f"logo={p['abs']('logo')}")
-        print(f"voice={p.get('voice')}  rate={p.get('rate', '+0%')}  pronounce={p.get('pronounce', {})}")
+        print(f"tts={p.get('tts') or 'edge'}  (edge fallback: voice={p.get('voice')} rate={p.get('rate', '+0%')})")
+        print(f"pronounce={p.get('pronounce', {})}")
         print(f"intro_clip={p['abs']('intro_clip') if p.get('intro_clip') else '(none: generate with brand_intro.py)'}")
         print(f"terminal={t.get('width')}x{t.get('height')} font {t.get('font_size')}  "
               f"margin_fill={t.get('margin_fill')}")

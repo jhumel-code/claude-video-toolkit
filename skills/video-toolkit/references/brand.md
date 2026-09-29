@@ -20,7 +20,8 @@ your own brand, see [`11-brand-profiles.md`](11-brand-profiles.md).
                "bg_deep":[0,9,15], "bg_lift":[2,33,40],
                "text":[247,249,247], "subtext":[150,166,178] },
   "grade": { ... },                    // finish.sh color grade (see 11-brand-profiles.md)
-  "voice": "en-US-AvaNeural", "rate": "-7%",
+  "tts": { "engine": "kokoro", "voice": "af_heart", "speed": 0.93 },
+  "voice": "en-US-AvaNeural", "rate": "-7%",          // edge-tts fallback
   "pronounce": { "Trustabl": "Trustable" },
   "intro_clip": "assets/trustabl-intro.mp4",
   "terminal": { "width": 2560, "height": 1440, "font_size": 28, "margin_fill": "#070E1A", ... }

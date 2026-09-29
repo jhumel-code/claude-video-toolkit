@@ -1,5 +1,9 @@
 # Voice Samples
 
+> These are the edge-tts voices. Since 2026-09-29 Trustabl narrates with Kokoro
+> `af_heart` instead (see `../references/14-narration-voice.md`); edge-tts and Ava remain
+> the fallback when a profile has no `tts` block.
+
 Every edge-tts voice this toolkit uses, with a comparable sample of each. All
 samples speak the **same line** so you can A/B them:
 
@@ -16,7 +20,7 @@ Generate more samples: `python -m edge_tts --voice <id> --text "..." --write-med
 
 | Sample file | Voice id | Role — where & how it's used | Notes |
 |-------------|----------|------------------------------|-------|
-| **`en-US-AvaNeural.mp3`** | `en-US-AvaNeural` | **PRIMARY narrator.** The Trustabl profile's `voice` (at `rate` -7%), which `vid.py` and `session_vid.py` use. Every current marketing video + the plugin demo uses it. | **English-locked → cannot code-switch.** This is the default for ALL narration. 7.2s. |
+| **`en-US-AvaNeural.mp3`** | `en-US-AvaNeural` | **edge-tts narrator** (the fallback since Kokoro took over). The Trustabl profile's `voice` (at `rate` -7%), used when a spec or profile has no `tts` block. Every current marketing video + the plugin demo uses it. | **English-locked → cannot code-switch.** This is the default for ALL narration. 7.2s. |
 | `en-US-AndrewNeural.mp3` | `en-US-AndrewNeural` | **Male narrator variant.** Alternate-voice demo renders (set `voice` in the spec). | Paces ≈ Ava (within ~0.3%) → works with the no-re-pace multi-voice swap. 7.2s. |
 | `en-US-EmmaNeural.mp3` | `en-US-EmmaNeural` | **Female narrator variant.** Alternate-voice demo renders. | Paces ≈ Ava (~2% slower). 7.4s. |
 | `en-US-GuyNeural.mp3` | `en-US-GuyNeural` | **Utility / label voice.** `scripts/legacy/build_compare.py` used it to speak option numbers ("One.", "Two.") in the A/B pronunciation comparison, so the labels are clearly distinct from the Ava clips being compared. | **Not for narration**: it's ~12% slower (8.1s) and used only as spoken labels. |

@@ -59,7 +59,7 @@ slip through. A hand-forked builder that drops the sidecar also drops the review
 extend `scripts/narrate.py` instead of forking. Schema:
 
 ```json
-{"name":"body","canvas":"2560x1440","voice":"en-US-AvaNeural","rate":"-7%","beats":[
+{"name":"body","canvas":"2560x1440","tts":{"engine":"kokoro","voice":"af_heart","speed":0.93},"beats":[
   {"id":"b1b","kind":"result","narr_start_s":42.9,"narr_text":"A readiness score ...",
    "beat_end_s":57.0,"jargon":["SDKs"],"spoken":{"SDKs":"S D Ks"},
    "expected_onscreen":["findings","96"],"scroll_top":["docstring"],"play_b":false}
@@ -78,9 +78,9 @@ extend `scripts/narrate.py` instead of forking. Schema:
 ## Prevention beats detection - pronounce.json
 
 `profiles/pronounce.json` maps jargon to a spoken form, merged with the brand profile's own
-`pronounce` respellings, and is applied to narration **before** edge-tts (which has no
-phoneme/SSML control - text respelling is the only lever). When review flags
-`pron_suspect` on a new term, add one entry and re-run the builder: only lines whose
+`pronounce` respellings, and is applied to narration **before** any TTS engine (text
+respelling is the one lever that works on every engine). When review flags
+`pron_suspect` on a new term, add one entry and re-run the builder: only sentences whose
 spoken text changed are re-synthesized (the TTS cache is keyed by it). See
 `06-voice-models.md`.
 

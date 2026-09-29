@@ -21,6 +21,7 @@
     "eq": "contrast=1.02:brightness=0.04:saturation=1.0",
     "colorbalance": "bs=0.04:bh=0.02"
   },
+  "tts": { "engine": "kokoro", "voice": "af_heart", "speed": 0.93 },
   "voice": "en-US-AvaNeural",
   "rate": "-7%",
   "pronounce": { "Trustabl": "Trustable" },

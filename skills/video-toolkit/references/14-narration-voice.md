@@ -48,7 +48,8 @@ and caches each sentence, so editing one line re-voices only that line.
 | `edge` | `en-US-AvaNeural`, rate -7% | edge-tts, needs the network, flattest delivery; the default when nothing else is set |
 
 Set the voice as a `tts` block: in a vid.py/session_vid.py spec, in a template's
-`narration.json`, or in the brand profile (the fallback for both):
+`narration.json`, or in the brand profile (the fallback for both; Trustabl's profile sets
+the block below):
 ```json
 "tts": {"engine": "kokoro", "voice": "af_heart", "speed": 0.93}
 ```

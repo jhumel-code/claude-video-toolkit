@@ -1,5 +1,9 @@
 # 06 · Voice Models & Narration
 
+> Since 2026-09-29 Trustabl narrates with Kokoro `af_heart` (the profile's `tts` block);
+> engines, setup and the audition recipe are in `14-narration-voice.md`. This page covers
+> edge-tts, which remains the fallback engine, and the rules that apply to every voice.
+
 Narration is **edge-tts** (Microsoft Edge neural TTS): free, no API key.
 
 ```bash
@@ -56,7 +60,7 @@ the picture: re-synthesize each line with the new voice, place it at the
 `narr_start_s` recorded in the video's `.beats.json` sidecar (atempo-fit only a clip
 that would overrun its slot), and mux onto the copied video stream
 (`-map 0:v -c:v copy`). Flag any clip that needed more than a 5% speed-up for an
-ear-check. Simpler still: change `voice`/`rate` in the spec and re-run vid.py, which
+ear-check. Simpler still: change the spec's `tts` block (or `voice`/`rate`) and re-run vid.py, which
 reuses the footage.
 
 `scripts/legacy/reaudio.py` is the one-off version of this that moved a 54-video batch

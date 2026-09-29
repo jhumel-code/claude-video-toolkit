@@ -38,8 +38,8 @@ D) BRAND INTRO / BANNER  (brands without an official intro)
 - **Terminal:** recorded natively at the canvas size with the brand's theme and margin
   colour (the profile's `terminal` block; gentape.py applies it). Footage that matches
   the canvas is never scaled; other sizes are padded, or scaled down to fit.
-- **Voice:** the profile's English-locked voice and rate (Trustabl: `en-US-AvaNeural`,
-  `-7%`), coined words respelled through the pronounce map.
+- **Voice:** the profile's `tts` block (Trustabl: Kokoro `af_heart`, speed 0.93; see
+  `14-narration-voice.md`), coined words respelled through the pronounce map.
 - **Loudness:** `loudnorm I=-17` for narration, `I=-15` for a music-bed intro.
 - **Bookends:** a brand with an official intro (`intro_clip`) always opens with it;
   terminal demos have no outro.
