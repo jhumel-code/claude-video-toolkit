@@ -16,6 +16,7 @@ from narrate import Build, dur
 
 spec = json.load(open(sys.argv[1], encoding="utf-8"))
 B = Build(spec)
+B.lint([(f"s{i}", s["t"]) for i, s in enumerate(spec["scenes"])])
 for i, s in enumerate(spec["scenes"]):
     src = B.footage(s.get("footage"))
     mp3 = B.tts(s["t"])

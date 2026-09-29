@@ -1,11 +1,12 @@
 """narrate.py - the shared engine behind the narrated-video builders (vid.py, session_vid.py).
 
 The house rules live here once, so the builders cannot drift apart again:
-  - voice and rate come from the spec, else the brand profile, else the defaults below.
-    *MultilingualNeural voices are refused: they code-switch on coined words.
-    The rate reaches edge-tts as ONE token (--rate=-7%); a bare "-7%" is read as a flag.
+  - the voice comes from the spec's `tts` block, else the brand profile's `tts` block,
+    else edge-tts with the spec/profile `voice` and `rate` (tts_engines.py voices it:
+    edge, kokoro or chatterbox). *MultilingualNeural voices are refused: they
+    code-switch on coined words.
   - narration is respelled through the pronounce map (shared jargon + brand) before TTS,
-    and synthesized clips are cached by (voice, rate, spoken text), so re-runs are fast
+    and voiced sentences are cached by voice settings + spoken text, so re-runs are fast
     and can never reuse a stale clip after the text changes.
   - every clip is encoded ONCE, straight onto the output canvas. Footage that already
     matches the canvas is untouched (terminal pixels stay crisp), larger footage is
@@ -19,7 +20,9 @@ import hashlib, json, os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from brand_config import load_profile            # noqa: E402
-from pronounce import normalize, jargon_in, load_map   # noqa: E402
+from pronounce import jargon_in, load_map   # noqa: E402
+from tts_engines import speak                # noqa: E402
+from narration_lint import lint             # noqa: E402
 
 FPS = 25
 DEFAULT_VOICE = "en-US-AvaNeural"
@@ -57,6 +60,8 @@ class Build:
             sys.exit(f"refusing voice {self.voice}: multilingual voices code-switch on coined "
                      f"words. Use an English-locked voice such as {DEFAULT_VOICE}.")
         self.rate = spec.get("rate") or prof.get("rate") or DEFAULT_RATE
+        self.tts_cfg = dict(spec.get("tts") or prof.get("tts")
+                            or {"engine": "edge", "voice": self.voice, "rate": self.rate})
         self.pmap = load_map(brand=spec.get("brand"))
         if spec.get("canvas"):
             self.canvas = tuple(int(v) for v in spec["canvas"].lower().split("x"))
@@ -69,6 +74,16 @@ class Build:
         self.gap = float(spec.get("gap", 0.4))
         self._probe = {}
         self.clips, self.auds, self.meta, self.cum = [], [], [], 0.0
+
+    def lint(self, texts):
+        """Warn about AI-sounding lines; stop on errors (em dashes, structural labels)."""
+        errors = 0
+        for key, text in texts:
+            for level, msg in lint(text):
+                print(f"{key}: {level}: {msg}")
+                errors += level == "error"
+        if errors:
+            sys.exit(f"{errors} narration lint error(s): fix the script before voicing it")
 
     # ---- inputs -------------------------------------------------------------------------
     def footage(self, override=None):
@@ -85,15 +100,12 @@ class Build:
         return self._probe[path]
 
     def tts(self, text):
-        spoken = normalize(text, self.pmap)
-        key = hashlib.sha1(f"{self.voice}|{self.rate}|{spoken}".encode("utf-8")).hexdigest()[:16]
-        mp3 = os.path.join(self.tts_dir, key + ".mp3")
-        if not os.path.exists(mp3):
-            part = mp3 + ".part"
-            run([sys.executable, "-m", "edge_tts", "--voice", self.voice, f"--rate={self.rate}",
-                 f"--text={spoken}", "--write-media", part])
-            os.replace(part, mp3)
-        return mp3
+        key = hashlib.sha1((json.dumps(self.tts_cfg, sort_keys=True) + text).encode("utf-8")).hexdigest()[:16]
+        wav = os.path.join(self.tts_dir, f"line_{key}.wav")
+        if not os.path.exists(wav):
+            speak(text, wav + ".part.wav", self.tts_cfg, self.pmap, self.tts_dir)
+            os.replace(wav + ".part.wav", wav)
+        return wav
 
     # ---- video --------------------------------------------------------------------------
     def fit_vf(self, w, h):
@@ -173,8 +185,8 @@ class Build:
         side = os.path.join(self.outdir, f"{self.name}.beats.json")
         with open(side, "w", encoding="utf-8") as f:
             json.dump({"name": self.name, "canvas": "x".join(map(str, self.canvas)),
-                       "voice": self.voice, "rate": self.rate, "beats": self.meta},
+                       "tts": self.tts_cfg, "beats": self.meta},
                       f, ensure_ascii=False, indent=1)
         print(f"DONE {self.name}: {self.cum:.1f}s, {len(self.meta)} narrated clips, "
-              f"{self.voice} {self.rate} -> {out}")
+              f"{self.tts_cfg.get('engine', 'edge')} {self.tts_cfg.get('voice', '')} -> {out}")
         return out

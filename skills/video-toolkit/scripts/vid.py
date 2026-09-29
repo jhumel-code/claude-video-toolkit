@@ -11,8 +11,9 @@ Two-phase narrated terminal demo. For each beat:
            next command; the beat's last frame is held instead.
 
 Spec (templates/spec.example.json): name, footage, beats[] of {ts, res, a, b} plus optional
-  top level: outdir, brand, voice, rate, canvas ("2560x1440"), fit ("pad"|"scale"),
-             pad_color, gap (silence after each line, default 0.4)
+  top level: outdir, brand, tts ({"engine": "kokoro", "voice": "af_heart", "speed": 0.93},
+             see references/14-narration-voice.md), voice/rate (edge shorthand), canvas
+             ("2560x1440"), fit ("pad"|"scale"), pad_color, gap (silence after each line, 0.4)
   per beat:  end, footage (a second recording), expect_a / expect (OCR tokens for
              review.sh), scroll_top, play_b, play_dur
 Voice and rate default to the brand profile (BRAND_PROFILE). Paths resolve from WORKDIR.
@@ -25,6 +26,7 @@ HOLD_B = 1.5   # seconds of result footage before phase B holds the frame
 
 spec = json.load(open(sys.argv[1], encoding="utf-8"))
 B = Build(spec)
+B.lint([(f"b{i}{k}", b[k]) for i, b in enumerate(spec["beats"]) for k in ("a", "b")])
 for i, b in enumerate(spec["beats"]):
     src = B.footage(b.get("footage"))
     ts, res = float(b["ts"]), float(b["res"])
