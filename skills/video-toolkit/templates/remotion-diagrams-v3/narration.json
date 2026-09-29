@@ -1,0 +1,80 @@
+{
+ "_comment": "Script of record for this template's narration. Edit the text here, then run the toolkit's scripts/voice.py <this folder> to re-voice it; it rewrites public/audio/ and src/narration.gen.ts. Paragraph breaks are blank lines.",
+ "tts": {
+  "engine": "kokoro",
+  "voice": "af_heart",
+  "speed": 0.93
+ },
+ "sections": [
+  {
+   "id": "overview",
+   "audio": "sy_overview.mp3",
+   "text": "Trustabl reads your AI agent's code once and turns that one scan into a handful of files. Each file looks at the same agent from a different angle.\n\nThe scan itself finds the problems. Some of the files describe what the agent is allowed to do, some enforce it while it runs, and some prove it to an auditor. Here's each one, and why it matters."
+  },
+  {
+   "id": "scan",
+   "audio": "sy_scan.mp3",
+   "text": "We'll start with the scan. It reads your agent's code and finds everything the agent can reach: its tools, its subagents, its skills, and the MCP servers it talks to. Then it checks each one against a set of rules.\n\nThe problems it finds are usually simple setup mistakes, like a tool that can run any shell command, or a guardrail nobody added. The scan catches them before the agent ships. You get a readiness score and a list of findings, and each finding points to the exact file and line.\n\nThe results come out as JSON or SARIF, so your CI can stop a bad build. Every scan also gets its own ID, tied to the exact version of the rules it ran, so you'll always know what produced a result."
+  },
+  {
+   "id": "contract",
+   "audio": "sy_contract.mp3",
+   "text": "Everything else is built from one file, and it's called the contract. Trustabl boils the scan down to one contract per agent. It lists the tools the agent may call and flags the risky ones. Here, run diagnostics gets flagged because it runs shell commands. The contract also records who the agent can hand off to, and the guardrails on its input and output.\n\nThink of it as the source of truth. The manifest, the policy, the conformance spec, and the sandbox policy are all generated from it. The agent's intended behavior is written down once, in one place."
+  },
+  {
+   "id": "conformance",
+   "audio": "sy_conformance.mp3",
+   "text": "The contract is written for machines. The conformance spec is the version a person can read. It spells out what the agent is expected to do. That covers which tools it can use, who it can hand off to, and which guardrails it needs. It also marks the tools that need sign-off before they run.\n\nThis agent declared everything, so enforce is set to true. A runtime monitor checks each live call against this spec. If a call fits the contract, it's allowed. If it doesn't, it's denied."
+  },
+  {
+   "id": "opa",
+   "audio": "sy_opa.mp3",
+   "text": "A list of the tools an agent may use is really an access policy, and Trustabl turns it into policy as code. It compiles the contract into a Rego bundle for Open Policy Agent. The bundle denies any tool that isn't in the contract, and nobody has to write those rules by hand.\n\nOPA is a graduated CNCF project. It's the engine a lot of Kubernetes clusters use to decide what gets admitted. When the agent wants to call a tool, its host asks OPA first. OPA makes the decision, and the host enforces it. If the list of allowed tools is empty, OPA warns you instead of blocking everything."
+  },
+  {
+   "id": "acs",
+   "audio": "sy_acs.mp3",
+   "text": "The same contract can also become a manifest for Microsoft's Agent Control Specification, or ACS. It's an open spec for governing an agent while it runs.\n\nGuardrails usually end up scattered across prompts and code. ACS puts them in one portable manifest instead. It checks that manifest at eight points in the agent's run, like right before a tool call, or before the agent answers. Trustabl writes that manifest for you, from the contract. It holds the checkpoints and the policies, in Rego or Cedar, and an ACS runtime enforces them. Each check comes back as allow, warn, deny, escalate, or transform."
+  },
+  {
+   "id": "openshell",
+   "audio": "sy_openshell.mp3",
+   "text": "The scan checks an agent before it runs. This next piece works while it's running. OpenShell is an NVIDIA project that runs an agent inside a sandbox, isolated at the kernel level. By default the agent can't reach the network, and its files and system calls are fenced off.\n\nWhat matters most is where the policy lives. It sits outside the agent, so even a compromised agent can't rewrite its own guardrails. Trustabl generates that policy from the contract and grants only what the agent needs. The agent can use the tools you allowed, and nothing else."
+  },
+  {
+   "id": "compliance",
+   "audio": "sy_compliance.mp3",
+   "text": "A finding only helps if the rest of the business can understand it. That's why Trustabl translates each one twice.\n\nFirst, into a threat name people recognize. OWASP calls an agent with too much power Excessive Agency. Then into the controls your auditors already work with. It covers eleven frameworks. Among them are NIST, ISO twenty-seven thousand two, SOC 2, the EU AI Act, and PCI DSS. One finding might show up as a gap in ISO's secure development control, with a status of needs attention, not evidenced, or clean.\n\nIt's careful about what it claims, though. It maps findings to controls and gathers evidence for them. It doesn't certify that you're compliant."
+  },
+  {
+   "id": "snapshot",
+   "audio": "sy_snapshot.mp3",
+   "text": "The last piece ties everything together and makes it provable. It's the signed snapshot. It records the exact scan, the version of the rules, a digest of the findings, and a hash of the policy that was applied.\n\nThat record goes inside a DSSE envelope, the in-toto format from the CNCF's supply-chain work. Anyone can check, even offline, that this snapshot came from this exact commit. Change a single byte, and the check fails.\n\nTrustabl keeps the signed index. The raw traces and prompts stay with you. So from one scan, you get every format your stack and your auditors already use."
+  },
+  {
+   "id": "spof_1",
+   "audio": "spof_1.mp3",
+   "text": "Every app here rides on one shared edge."
+  },
+  {
+   "id": "spof_2",
+   "audio": "spof_2.mp3",
+   "text": "Cut that one edge, and they all go dark at once."
+  },
+  {
+   "id": "spof_3",
+   "audio": "spof_3.mp3",
+   "text": "Now add a second, independent path. Nothing depends on a single point anymore."
+  },
+  {
+   "id": "spof_4",
+   "audio": "spof_4.mp3",
+   "text": "The first path can still fail, and nothing goes down. That's redundancy."
+  },
+  {
+   "id": "outro",
+   "audio": "sy_outro.mp3",
+   "text": "Thanks for watching. Trustabl works with the standards your stack already trusts. You'll find more at Trustabl dot A I."
+  }
+ ]
+}
