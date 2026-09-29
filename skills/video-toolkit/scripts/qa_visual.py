@@ -6,11 +6,13 @@ Only beats that declare expected_onscreen are checked (others are skipped). For 
 beats, declare scroll_top tokens (first lines of the file) to verify the top was actually shown.
 
 Usage: python3 qa_visual.py video.mp4 beats.json
-Env: QA_OCR_MINCONF unused (psm6 text only). Writes qa_visual.json. Exit 1 on any issue.
+Env: QA_OCR_PSM (default "6,4"). Writes qa_visual.json. Exit 1 on any issue.
+Each frame is read in two tesseract layouts and the text merged: psm 6 alone garbled the
+last terminal line above the cursor ("line 12" read as "a 12"), which psm 4 reads cleanly.
 """
 import json, os, re, subprocess, sys, tempfile
 
-PSM = os.environ.get("QA_OCR_PSM", "6")
+PSMS = os.environ.get("QA_OCR_PSM", "6,4").split(",")
 MINCHARS = int(os.environ.get("QA_MIN_OCR", "12"))  # a result beat below this is near-blank (e.g.
                                                     # frozen on a command being typed, not the content)
 
@@ -20,8 +22,9 @@ def ocr_at(video, t):
         subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-ss", str(t), "-i", video, "-frames:v", "1",
                         "-vf", "negate,format=gray,eq=contrast=1.6,scale=iw*2:ih*2", "-y", f],
                        check=True)
-        txt = subprocess.check_output(["tesseract", f, "stdout", "--psm", PSM],
-                                      stderr=subprocess.DEVNULL).decode("utf-8", "ignore")
+        txt = "\n".join(subprocess.check_output(["tesseract", f, "stdout", "--psm", p.strip()],
+                                                stderr=subprocess.DEVNULL).decode("utf-8", "ignore")
+                        for p in PSMS)
     except Exception:
         txt = ""
     finally:
