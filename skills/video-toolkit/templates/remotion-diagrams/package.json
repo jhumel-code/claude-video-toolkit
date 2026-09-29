@@ -4,8 +4,11 @@
   "description": "Remotion diagram-explainer template, codename Slipstream (v2)",
   "scripts": {
     "studio": "npx remotion studio",
-    "render": "npx remotion render src/index.ts SprintReview out/video.mp4",
-    "render:preview": "npx remotion render src/index.ts SprintReview out/preview.mp4 --scale=0.5",
+    "render": "npx remotion render src/index.ts ExplainerWorking out/video.mp4",
+    "render:preview": "npx remotion render src/index.ts ExplainerWorking out/preview.mp4 --scale=0.5",
+    "render:4k": "npx remotion render src/index.ts ExplainerWorking out/video_4k.mp4 --scale=1.5 --crf=10 --concurrency=2",
+    "render:intro": "npx remotion render src/index.ts DemoIntro out/demo_intro.mp4",
+    "typecheck": "tsc --noEmit",
     "build": "npx remotion bundle src/index.ts",
     "upgrade": "npx remotion upgrade"
   },

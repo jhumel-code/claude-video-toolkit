@@ -53,8 +53,11 @@ export const FlowEdge: React.FC<{
   });
   return (
     <>
-      <path d={d} fill="none" stroke={BRAND.ink} strokeWidth={1.5 * size} opacity={0.10 + 0.12 * flow} />
-      <path d={d} fill="none" stroke={color} strokeWidth={1.5 * size} opacity={0.30 * flow} strokeDasharray={`${size} ${7 * size}`} strokeLinecap="round" />
+      {/* The rail must read in BOTH states: a dead edge is a visible line that
+          carries nothing (the "no write path" story depends on seeing it), and
+          a flowing edge should not rely on its particles alone to be seen. */}
+      <path d={d} fill="none" stroke={BRAND.ink} strokeWidth={2 * size} opacity={0.16 + 0.16 * flow} />
+      <path d={d} fill="none" stroke={color} strokeWidth={1.5 * size} opacity={0.12 + 0.28 * flow} strokeDasharray={`${size} ${7 * size}`} strokeLinecap="round" />
       {flow > 0.02 && dots.map((p, i) => (
         <g key={i} opacity={flow * p.o}>
           <circle cx={p.x} cy={p.y} r={7 * size} fill={color} opacity={0.28} />

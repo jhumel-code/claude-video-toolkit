@@ -72,7 +72,7 @@ export const SPECS: Spec[] = [
     ],
   },
   {
-    id: 'acs', eyebrow: '05 · Enforce', title: 'Microsoft Agent Control Specification', ms: true, badge: 'preview · v0.3.x beta', audio: 'sy_acs.mp3', audioDur: 49.416, focalAt: 3.42, dx: 200, dy: -150,
+    id: 'acs', eyebrow: '05 · Enforce', title: 'Microsoft Agent Control Specification', ms: true, audio: 'sy_acs.mp3', audioDur: 42.552, focalAt: 3.42, dx: 200, dy: -150,
     groups: [
       { nodes: [CONTRACT_BOX(340, 720)] },
       { nodes: [{ x: 900, y: 720, w: 400, h: 220, title: 'ACS Manifest', sub: 'intervention_points + policies', logo: 'ms' }], arrows: [{ x1: 540, y1: 720, x2: 680, y2: 720, label: 'exports' }] },
@@ -82,7 +82,7 @@ export const SPECS: Spec[] = [
     ],
   },
   {
-    id: 'openshell', eyebrow: '06 · Enforce', title: 'NVIDIA OpenShell', logo: 'nvidia', badge: 'alpha · proof-of-life', badgeColor: BRAND.nvGreen, audio: 'sy_openshell.mp3', audioDur: 40.056, focalAt: 5.4, dx: 68, dy: -130,
+    id: 'openshell', eyebrow: '06 · Enforce', title: 'NVIDIA OpenShell', logo: 'nvidia', audio: 'sy_openshell.mp3', audioDur: 38.664, focalAt: 5.4, dx: 68, dy: -130,
     groups: [
       { nodes: [CONTRACT_BOX(360, 745)] },
       { nodes: [
@@ -94,11 +94,11 @@ export const SPECS: Spec[] = [
         arrows: [{ x1: 560, y1: 745, x2: 760, y2: 745, label: 'generates policy' }],
         pills: [{ x: 1080, y: 620, text: 'OpenShell Sandbox', color: L, logo: 'nvidia', bare: true }] },
       { arrows: [{ x1: 1400, y1: 745, x2: 1705, y2: 745, label: 'enforced at runtime' }], nodes: [{ x: 1905, y: 745, w: 360, h: 150, title: 'Kernel-Level', sub: 'Seccomp · Landlock', small: true }], pills: [{ x: 1080, y: 985, text: "generated from your code · enforced outside the agent, which can't rewrite its own guardrails", color: L }] },
-      { mono: MONO([{ t: '# OpenShell policy schema (NVIDIA) — what it controls:' }, { t: 'version, filesystem_policy, landlock, process, network_policies', hi: true }, { t: 'network_policies:  pair allowed binaries -> allowed endpoints' }, { t: '' }, { t: 'Trustabl emits a least-privilege policy toward this model from' }, { t: 'the contract — the allowed tools become an enforced sandbox.' }], 'openshell · policy') },
+      { mono: MONO([{ t: '# OpenShell policy schema (NVIDIA), what it controls:' }, { t: 'version, filesystem_policy, landlock, process, network_policies', hi: true }, { t: 'network_policies:  pair allowed binaries -> allowed endpoints' }, { t: '' }, { t: 'Trustabl emits a least-privilege policy toward this model from' }, { t: 'the contract, the allowed tools become an enforced sandbox.' }], 'openshell · policy') },
     ],
   },
   {
-    id: 'compliance', eyebrow: '07 · Prove', title: 'The Compliance Map', logo: 'owasp', audio: 'sy_compliance.mp3', audioDur: 49.8, focalAt: 10.1, dx: 190, dy: -92,
+    id: 'compliance', eyebrow: '07 · Prove', title: 'The Compliance Map', logo: 'owasp', audio: 'sy_compliance.mp3', audioDur: 50.256, focalAt: 10.1, dx: 190, dy: -92,
     groups: [
       { nodes: [{ x: 320, y: 650, w: 320, h: 200, title: 'Scan Findings', sub: 'severity-ranked', focal: true, logo: 'trustabl' }] },
       { nodes: [{ x: 880, y: 650, w: 410, h: 220, title: 'OWASP LLM Top 10', sub: 'risk taxonomy', logo: 'owasp' }], arrows: [{ x1: 500, y1: 650, x2: 655, y2: 650, label: 'classified as' }] },
@@ -111,8 +111,8 @@ export const SPECS: Spec[] = [
         { x1: 1320, y1: 736, x2: 1430, y2: 736 },
         { x1: 1320, y1: 822, x2: 1430, y2: 822 },
       ] },
-      { pills: [{ x: 880, y: 880, text: 'maps findings to controls — it does NOT certify compliance', color: BRAND.gold }] },
-      { mono: MONO([{ t: '"frameworks": 9,', hi: true }, { t: '"posture": { "needs_attention": 10, "not_evidenced": 6, "evidenced_clean": 1 },', hi: true }, { t: '"flagged_control": { "ISO-27002:8.25", "Secure development life cycle" },' }, { t: '"disclaimer": "...generates evidence toward controls;' }, { t: '               it does not certify compliance."' }], 'compliance.json') },
+      { pills: [{ x: 880, y: 880, text: 'maps findings to controls, it does NOT certify compliance', color: BRAND.gold }] },
+      { mono: MONO([{ t: '"frameworks": 11,', hi: true }, { t: '"posture": { "needs_attention": 10, "not_evidenced": 6, "evidenced_clean": 1 },', hi: true }, { t: '"flagged_control": { "ISO-27002:8.25", "Secure development life cycle" },' }, { t: '"disclaimer": "...generates evidence toward controls;' }, { t: '               it does not certify compliance."' }], 'compliance.json') },
     ],
   },
   {

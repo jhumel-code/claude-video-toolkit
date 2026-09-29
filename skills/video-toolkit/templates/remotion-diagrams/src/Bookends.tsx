@@ -2,7 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, interpolate, Easing, Img } from 'remotion';
 import { Bg } from './components';
 import { FontLoader } from './fonts';
-import { BRAND, FPS, K } from './brand';
+import { BRAND, LIGHT_SKIN, FPS, K } from './brand';
 
 export const introFrames = Math.round((2.946 + 1.35) * FPS); // SFX ident + short logo hold (no narration)
 export const outroFrames = Math.round((0.5 + 8.16 + 1.5) * FPS);
@@ -60,7 +60,11 @@ const LFull: React.FC = () => <Img src={staticFile('logos/trustabl-lockup.svg')}
 const LShield: React.FC<{ st?: React.CSSProperties; w?: number }> = ({ st, w = LW }) => <Img src={staticFile('logos/trustabl-shield.svg')} style={{ position: 'absolute', left: 0, top: 0, width: w, ...st }} />;
 const LWord: React.FC<{ st?: React.CSSProperties; w?: number }> = ({ st, w = LW }) => <Img src={staticFile('logos/trustabl-word.svg')} style={{ position: 'absolute', left: 0, top: 0, width: w, ...st }} />;
 
-// A — staggered: shield first, then the wordmark
+// A — staggered: shield first, then the wordmark. The wordmark follows the skin so the
+// intro logo matches the slide-header lockup (components.tsx Header) and the DemoIntro:
+// navy takes the DARK-safe wordmark (trustabl-word-dark.svg, near-white "Trust"), light
+// takes trustabl-word.svg (navy "Trust") — on light paper the dark-safe one is all but
+// invisible. This is the default intro for all explainer/working-template videos.
 export const IntroA: React.FC = () => {
   const f = useCurrentFrame();
   const sm = (a: number, b: number, from: number, to: number) =>
@@ -76,7 +80,9 @@ export const IntroA: React.FC = () => {
         <div style={{ transform: `scale(${0.8 * sc})` }}>
           <div style={{ position: 'relative', width: LW, height: LW * 2492 / 10449, transform: `translateX(${G / 2}px)` }}>
             <LShield st={{ opacity: ps }} />
-            <LWord st={{ opacity: pw, transform: `translateX(${-G}px)` }} />
+            {LIGHT_SKIN
+              ? <LWord st={{ opacity: pw, transform: `translateX(${-G}px)` }} />
+              : <LWordDark st={{ opacity: pw, transform: `translateX(${-G}px)` }} />}
           </div>
         </div>
       </div>

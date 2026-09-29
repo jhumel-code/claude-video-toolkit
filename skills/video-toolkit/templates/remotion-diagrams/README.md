@@ -26,21 +26,43 @@ zero-dependency fallback; this is the higher-fidelity engine.
 cp -r <this template> my-explainer && cd my-explainer
 npm install                                  # Remotion + bundled browser, ~free
 npx remotion studio                          # live preview while you edit specs
-npx remotion render src/index.ts Explainer out/explainer.mp4   # full video
-npx remotion render src/index.ts scan out/scan.mp4             # one section
+npx remotion render src/index.ts ExplainerWorking out/explainer.mp4   # full video (default: no outro)
+npx remotion render src/index.ts scan out/scan.mp4                    # one section
+npx remotion still src/index.ts scan out/scan.png --frame=1800 --scale=0.5   # QA still (cheap)
 ```
 The example's narration, bookend audio, and logos ship in `public/`, so the render
 commands above work out of the box (asset licensing: repo `NOTICE.md`).
 
+Compositions: `ExplainerWorking` (IntroA + sections, the default shape for new
+videos), `Explainer` (same plus the branded outro), one per section id, `Spof`, and
+the bookends. `DemoIntro` is the official intro for terminal demos (dark terminal
+background); the toolkit ships it pre-rendered as `assets/trustabl-intro.mp4`.
+
+**4K delivery:** `--scale=1.5 --crf=10 --concurrency=2` (renders the 2560x1440 canvas
+at 3840x2160). Keep concurrency at 2 on Windows: higher values crash ffmpeg at DLL
+init. A 4K60 render runs ~30 min for ~4 min of video, so start it in the background.
+QA with stills first, then render once.
+
+**Skins:** navy is the default. `REMOTION_SKIN=light` selects the original light
+skin (same token names in `src/brand.ts`); anything else throws.
+
 ## Author your video
-1. Put narration mp3s in `public/audio/sy_<id>.mp3` (e.g. from this skill's
-   `make_voice.sh` / edge-tts). Measure each duration.
-2. Edit `src/specs.tsx` — one `Spec` per section: `eyebrow`, `title`, `logo`,
+1. Write narration and synthesize one mp3 per section into `public/audio/sy_<id>.mp3`
+   with ONE edge-tts call each, using the brand voice and rate and the pronounce map
+   applied to the text (for Trustabl: `en-US-AvaNeural`, `--rate=-7%`, passed as one
+   token). The toolkit's `scripts/pronounce.py "<text>"` prints the respelled text
+   (shared jargon map plus the `BRAND_PROFILE`'s own respellings).
+2. Edit `src/specs.tsx`, one `Spec` per section: `eyebrow`, `title`, `logo`,
    `audio`, `audioDur` (seconds), and ordered `groups[]` (each a reveal step holding
    `nodes` / `arrows` / `pills` / `mono`). Reveals auto-pace across `audioDur` and
-   finish by ~80% so nothing pops in at the cut.
+   finish by ~80% so nothing pops in at the cut. **`audioDur` must equal the mp3's
+   ffprobe duration exactly** (it sets the section length); re-check every section
+   after any audio change. `focalAt` is a voiceover timestamp, so re-verify it when
+   narration is re-cut.
 3. Put logos in `public/logos/<name>.png`. Brand colors/fonts live in `src/brand.ts`.
-4. `Root.tsx` registers each section + the master `Explainer` (crossfade chain).
+   No em dashes in on-screen text.
+4. `Root.tsx` registers each section plus the `Explainer` / `ExplainerWorking`
+   chains (slide between sections, fade only at the bookend edges).
 
 ## Network primitives
 `src/network.tsx` holds the stateful diagram language for network/topology

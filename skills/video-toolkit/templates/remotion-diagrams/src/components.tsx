@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, Img, staticFile } from 'remotion';
-import { BRAND, W, H, K } from './brand';
+import { BRAND, LIGHT_SKIN, W, H, K } from './brand';
 
 // ---- background: warm white-smoke paper + faint dot grid (diagram-design light, flat = no banding) ----
 export const Bg: React.FC = () => (
@@ -48,15 +48,15 @@ export const Node: React.FC<{
         ? <div style={{ position: 'absolute', left: 18, top: 16 }}><MsGrid cell={16} /></div>
         : cornerLogo === 'trustabl'
         ? <Img src={staticFile('logos/trustabl.png')} style={{ position: 'absolute', left: 20, top: 16, height: 40, objectFit: 'contain' }} />
-        : <div style={{ position: 'absolute', left: 20, top: 16, height: 40, padding: '4px 9px', background: BRAND.logoChip, borderRadius: 6, display: 'flex', alignItems: 'center' }}>
-            <Img src={staticFile('logos/' + cornerLogo + '.png')} style={{ height: 28, objectFit: 'contain' }} />
+        : <div style={{ position: 'absolute', left: 20, top: 16, height: 40, padding: LIGHT_SKIN ? 0 : '4px 9px', background: BRAND.logoChip, borderRadius: 6, display: 'flex', alignItems: 'center' }}>
+            <Img src={staticFile('logos/' + cornerLogo + '.png')} style={{ height: LIGHT_SKIN ? 40 : 28, objectFit: 'contain' }} />
           </div>)}
       {logo && (logo === 'ms'
         ? <div style={{ marginBottom: 2 }}><MsGrid cell={Math.round(h * 0.145)} /></div>
         : logo === 'trustabl'
         ? <Img src={staticFile('logos/trustabl.png')} style={{ height: px(h * 0.34), marginBottom: 2, objectFit: 'contain' }} />
-        : <div style={{ height: px(h * 0.34), marginBottom: 2, padding: '5px 12px', background: BRAND.logoChip, borderRadius: 7, display: 'flex', alignItems: 'center' }}>
-            <Img src={staticFile('logos/' + logo + '.png')} style={{ height: '74%', objectFit: 'contain' }} />
+        : <div style={{ height: px(h * 0.34), marginBottom: 2, padding: LIGHT_SKIN ? 0 : '5px 12px', background: BRAND.logoChip, borderRadius: 7, display: 'flex', alignItems: 'center' }}>
+            <Img src={staticFile('logos/' + logo + '.png')} style={{ height: LIGHT_SKIN ? '100%' : '74%', objectFit: 'contain' }} />
           </div>)}
       <div style={{ fontFamily: 'Geist', fontWeight: 600, fontSize: px(small ? 25 : 31), color: tcolor || (focal ? BRAND.accentHi : BRAND.ink), lineHeight: 1.15 }}>{title}</div>
       {sub && <div style={{ width: small ? 30 : 42, height: 1, background: focal ? 'rgba(22,136,122,0.40)' : BRAND.line }} />}
@@ -130,18 +130,23 @@ export const Header: React.FC<{ eyebrow?: string; title?: string; titleParts?: {
     {sub && <div style={{ position: 'absolute', left: 92, top: 162, fontFamily: 'GeistMono', fontSize: 19, letterSpacing: '0.04em', color: subColor ?? BRAND.link }}>{sub}</div>}
     <div style={{ position: 'absolute', left: 92, top: 210, width: W - 184, height: 1, background: BRAND.line }} />
     {logo === 'trustabl' ? (
-      // dark-safe lockup: shield SVG + trustabl-word-dark.svg overlay (same technique as
-      // Bookends' DemoIntro/DemoOutro) — the light lockup's navy wordmark fill is invisible here.
+      // Lockup = shield SVG + wordmark overlay (same technique as Bookends'
+      // DemoIntro/DemoOutro). The wordmark has to follow the skin: -word-dark.svg fills
+      // "Trust" near-white (#E8EBF0) for navy, -word.svg fills it navy (#1A3764) for light.
+      // Using the wrong one makes "Trust" all but invisible — that is exactly what the
+      // light skin regressed to before this was gated.
+      // The two SVGs do not share a kerning origin, so each needs its own translateX;
+      // -7px for light was solved by minimising pixel delta against out/g_scan.png.
       <div style={{ position: 'absolute', right: 92, top: 74, width: 300, height: 300 * 2492 / 10449 }}>
         <div style={{ position: 'relative', width: 300, height: 300 * 2492 / 10449, transform: 'translateX(10px)' }}>
           <Img src={staticFile('logos/trustabl-shield.svg')} style={{ position: 'absolute', left: 0, top: 0, width: 300 }} />
-          <Img src={staticFile('logos/trustabl-word-dark.svg')} style={{ position: 'absolute', left: 0, top: 0, width: 300, transform: 'translateX(-19px)' }} />
+          <Img src={staticFile(LIGHT_SKIN ? 'logos/trustabl-word.svg' : 'logos/trustabl-word-dark.svg')} style={{ position: 'absolute', left: 0, top: 0, width: 300, transform: LIGHT_SKIN ? 'translateX(-7px)' : 'translateX(-19px)' }} />
         </div>
       </div>
     ) : logo ? (
       <div style={{ position: 'absolute', right: 92, top: 78, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ height: 62, padding: '9px 16px', background: BRAND.logoChip, borderRadius: 10, display: 'flex', alignItems: 'center' }}>
-          <Img src={staticFile('logos/' + logo + '.png')} style={{ height: 44, objectFit: 'contain' }} />
+        <div style={{ height: 62, padding: LIGHT_SKIN ? 0 : '9px 16px', background: BRAND.logoChip, borderRadius: 10, display: 'flex', alignItems: 'center' }}>
+          <Img src={staticFile('logos/' + logo + '.png')} style={{ height: LIGHT_SKIN ? 62 : 44, objectFit: 'contain' }} />
         </div>
         {LOGO_NAMES[logo] && <span style={{ fontFamily: 'GeistMono', fontSize: 27, color: BRAND.ink }}>{LOGO_NAMES[logo]}</span>}
       </div>

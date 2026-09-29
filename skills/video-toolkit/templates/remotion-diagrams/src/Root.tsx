@@ -5,25 +5,31 @@ import { TransitionSeries, linearTiming } from '@remotion/transitions';
 import { slide } from '@remotion/transitions/slide';
 import { fade } from '@remotion/transitions/fade';
 import { Section, secFrames } from './Section';
-import { Intro, Outro, IntroSound, IntroA, IntroB, IntroC, introFrames, outroFrames, introSoundFrames } from './Bookends';
+import { Intro, Outro, IntroSound, IntroA, IntroB, IntroC, DemoIntro, DemoOutro, introFrames, outroFrames, introSoundFrames } from './Bookends';
 import { SPECS } from './specs';
 import { Spof, spofFrames } from './Spof';
-import { FPS, CW, CH } from './brand';
+import { FPS, K, CW, CH } from './brand';
 
-const XF = 22; // slide-transition frames between sections (no same-position header overlap)
+const XF = K(22); // slide-transition frames between sections (no same-position header overlap)
 
-// intro + the 9 sections + outro, joined as one transition series
-const ITEMS = [
+type Item = { key: string; node: React.ReactNode; dur: number };
+
+// intro + the 9 sections + outro
+const ITEMS: Item[] = [
   { key: '_intro', node: <IntroA />, dur: introFrames },
   ...SPECS.map((s) => ({ key: s.id, node: <Section spec={s} />, dur: secFrames(s.audioDur) })),
   { key: '_outro', node: <Outro />, dur: outroFrames },
 ];
+// The default for new videos: same intro + sections, no branded outro (the video ends
+// on its last section).
+const WORKING_ITEMS = ITEMS.slice(0, -1);
 
-const Explainer: React.FC = () => (
+// One transition series: soft fade at the bookend edges, slide between content sections
+// (a fade() between content sections superimposes their same-position headers).
+const chain = (items: Item[], hasOutro: boolean): React.FC => () => (
   <TransitionSeries>
-    {ITEMS.map((it, i) => {
-      // soft fade into the intro-edge and out to the outro-edge; slide between content sections
-      const bookendEdge = i === 1 || i === ITEMS.length - 1;
+    {items.map((it, i) => {
+      const bookendEdge = i === 1 || (hasOutro && i === items.length - 1);
       return (
         <React.Fragment key={it.key}>
           {i > 0 && (
@@ -38,12 +44,15 @@ const Explainer: React.FC = () => (
     })}
   </TransitionSeries>
 );
+const total = (items: Item[]) => items.reduce((a, it) => a + it.dur, 0) - XF * (items.length - 1);
 
-const TOTAL = ITEMS.reduce((a, it) => a + it.dur, 0) - XF * (ITEMS.length - 1);
+const Explainer = chain(ITEMS, true);
+const ExplainerWorking = chain(WORKING_ITEMS, false);
 
 export const RemotionRoot: React.FC = () => (
   <>
-    <Composition id="Explainer" component={Explainer} durationInFrames={TOTAL} fps={FPS} width={CW} height={CH} />
+    <Composition id="Explainer" component={Explainer} durationInFrames={total(ITEMS)} fps={FPS} width={CW} height={CH} />
+    <Composition id="ExplainerWorking" component={ExplainerWorking} durationInFrames={total(WORKING_ITEMS)} fps={FPS} width={CW} height={CH} />
     <Composition id="Spof" component={Spof} durationInFrames={spofFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="Intro" component={Intro} durationInFrames={introFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="Outro" component={Outro} durationInFrames={outroFrames} fps={FPS} width={CW} height={CH} />
@@ -51,6 +60,10 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="IntroA" component={IntroA} durationInFrames={introFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="IntroB" component={IntroB} durationInFrames={introFrames} fps={FPS} width={CW} height={CH} />
     <Composition id="IntroC" component={IntroC} durationInFrames={introFrames} fps={FPS} width={CW} height={CH} />
+    {/* The official terminal-demo bookends (dark terminal background). DemoIntro is what
+        the toolkit ships pre-rendered as assets/trustabl-intro.mp4. */}
+    <Composition id="DemoIntro" component={DemoIntro} durationInFrames={introFrames} fps={FPS} width={CW} height={CH} />
+    <Composition id="DemoOutro" component={DemoOutro} durationInFrames={outroFrames} fps={FPS} width={CW} height={CH} />
     {SPECS.map((s) => (
       <Composition
         key={s.id}
