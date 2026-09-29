@@ -1,7 +1,7 @@
 {
   "name": "claude-video-toolkit",
-  "version": "0.1.0",
-  "description": "Produce brand intros, animated banners, and narrated terminal/CLI demo videos from the command line — deterministic, free (no paid tools), and brand-agnostic via JSON brand profiles.",
+  "version": "0.2.0",
+  "description": "Produce narrated terminal/CLI demo videos, animated diagram explainers, and brand intros from the command line: deterministic, free (VHS + edge-tts + ffmpeg + Pillow, plus a Remotion template), and brand-agnostic via JSON brand profiles.",
   "author": {
     "name": "Ian Jhumel Bautista"
   },
@@ -12,7 +12,8 @@
     "motion-graphics",
     "ffmpeg",
     "vhs",
-    "brand"
+    "brand",
+    "remotion"
   ],
   "license": "MIT"
 }
