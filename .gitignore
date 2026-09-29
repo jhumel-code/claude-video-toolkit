@@ -13,6 +13,7 @@ skills/video-toolkit/templates/*/out/
 # Render working dirs + outputs (created at runtime via WORKDIR / OUT_DIR)
 /out/
 _tts/
+.tts-cache/
 _snd/
 bi_intro/
 bi_banner/
