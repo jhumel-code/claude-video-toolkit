@@ -48,26 +48,34 @@ def ink_series(src, fps):
     return np.array(ink, dtype=np.int64)
 
 
+def trailing_max(x, w):
+    return np.array([x[max(0, i - w + 1):i + 1].max() for i in range(len(x))])
+
+
 def pin(ink, fps):
     w = max(3, round(0.56 * fps))                  # longer than one cursor-off phase
-    env = np.array([ink[max(0, i - w + 1):i + 1].max() for i in range(len(ink))])
-    floor = env[w:].min() if len(env) > w else env.min()
-    busy = env > floor + MARGIN
+    env_all = trailing_max(ink, w)
+    floor = env_all[w:].min() if len(env_all) > w else env_all.min()
+    low = floor + MARGIN                           # the empty prompt, cursor on or off
+    diffs = np.abs(np.diff(ink))
+    toggles = diffs[(diffs >= 8) & (diffs <= 200)]
+    blink = int(np.bincount(toggles).argmax()) if len(toggles) else 32
+    # a clear is a one-frame drop onto the empty prompt, far bigger than a cursor blink. Found
+    # on the raw ink, so a clear stays visible however soon the next command starts typing.
+    clears = [i for i in range(1, len(ink)) if ink[i] <= low and ink[i - 1] - ink[i] > max(2 * blink, 24)]
     flat_n = max(3, round(0.4 * fps))              # the pause between typing and Enter
-    beats, i, n = [], 0, len(ink)
-    while i < n:
-        if not busy[i]:
-            i += 1
+    beats = []
+    for s0, s1 in zip([0] + clears, clears + [len(ink)]):
+        env = trailing_max(ink[s0:s1], w)          # blink flattened within this beat only
+        busy = np.nonzero(env > low)[0]
+        if not len(busy):
             continue
-        a = i
-        while i < n and busy[i]:
-            i += 1
-        run_end = i - 1                            # env lags the clear by up to w samples
-        end = max(j for j in range(a, run_end + 1) if ink[j] > floor + MARGIN) \
-            if any(ink[j] > floor + MARGIN for j in range(a, run_end + 1)) else run_end
+        a = s0 + busy[0]
+        live = np.nonzero(ink[s0:s1] > low)[0]
+        end = s0 + (live[-1] if len(live) else busy[-1])
         if (end - a) / fps < 0.5:
             continue
-        seg = env[a:end + 1]
+        seg = env[a - s0:end - s0 + 1]
         d = np.diff(seg, prepend=seg[0])
         # typing ends at the first flat stretch (the pause before Enter)
         typed = next((k for k in range(1, len(seg) - flat_n + 1)
