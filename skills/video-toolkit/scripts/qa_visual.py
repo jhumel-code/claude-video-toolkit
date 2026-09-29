@@ -17,7 +17,7 @@ MINCHARS = int(os.environ.get("QA_MIN_OCR", "12"))  # a result beat below this i
 def ocr_at(video, t):
     f = tempfile.mktemp(suffix=".png")
     try:
-        subprocess.run(["ffmpeg", "-v", "error", "-ss", str(t), "-i", video, "-frames:v", "1",
+        subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-ss", str(t), "-i", video, "-frames:v", "1",
                         "-vf", "negate,format=gray,eq=contrast=1.6,scale=iw*2:ih*2", "-y", f],
                        check=True)
         txt = subprocess.check_output(["tesseract", f, "stdout", "--psm", PSM],

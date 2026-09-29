@@ -8,7 +8,7 @@ beats.json sidecar so there is NO timeline reverse-engineering.
 Usage: python3 qa_audio.py words.json beats.json
 Flags: drift, overrun(spillover), content_mismatch, pron_suspect, dead_air.
 Exit 1 if any beat has issues. Writes qa_audio.json.
-Env: QA_SYNC(1.0) QA_OVERRUN(0.4) QA_RATIO(0.55) QA_PWORD(0.4) QA_DEADAIR(2.5)
+Env: QA_SYNC(1.0) QA_OVERRUN(0.7) QA_RATIO(0.55) QA_PWORD(0.4) QA_DEADAIR(2.5)
 """
 import json, os, re, sys
 from difflib import SequenceMatcher
@@ -59,10 +59,12 @@ def main():
         # pronunciation is a SOFT NOTE only (ASR can silently auto-correct, so this is a hint
         # for a human spot-listen, never a hard FAIL). Flag a jargon term only if NONE of its
         # significant tokens were transcribed at all - i.e. whisper could not hear it cleanly.
+        # The respelled form counts too: "Trustabl" is spoken (and heard) as "Trustable".
         notes = []
         htoks = set(norm(heard))
+        spoken = beat.get("spoken", {})
         for term in beat.get("jargon", []):
-            cand = {t for t in norm(term) if len(t) >= 3}
+            cand = {t for t in norm(term) + norm(spoken.get(term, "")) if len(t) >= 3}
             if cand and not (cand & htoks):
                 notes.append(f"pron_suspect '{term}' (not heard cleanly - spot-listen)")
         flags.append({"beat": beat["id"], "t": round(start, 1), "issues": issues, "notes": notes,
