@@ -1,4 +1,4 @@
-{"name":"07-network-policy-from-code","footage":"f07-network.mp4","outdir":"./out/","beats":[
-{"ts":1.5,"res":4.24,"a":"Here's a different agent: an on-call assistant. Let's read its code.","b":"Its tools call services directly. One checks a status page, one opens incidents, one reads an internal metrics server."},
-{"ts":18.08,"res":24.44,"a":"One command turns that code into a network policy.","b":"No guesswork. Trustabl reads exactly which hosts the agent reaches, and how."},
-{"ts":28.52,"res":33.72,"a":"And here's the policy.","b":"The status check can only read its one status page. The incident tool can only post to its one endpoint. The internal server is listed separately, flagged for a human to review. Everything else is denied."}]}
+{"name":"07-network-policy-from-code","footage":"f07-network.mp4","outdir":"out","beats":[
+{"ts":1.5,"res":4.24,"end":17.4,"a":"Here's a different agent: an on-call assistant. Let's read its code.","b":"Its tools call services directly. One checks a status page, one opens incidents, one reads an internal metrics server.","expect_a":["cat ops-agent/main.py"]},
+{"ts":18.08,"res":24.44,"end":27.9,"a":"One command turns that code into a network policy.","b":"No guesswork. Trustabl reads exactly which hosts the agent reaches, and how."},
+{"ts":28.52,"res":33.72,"end":47.6,"a":"And here's the policy.","b":"The status check can only read its one status page. The incident tool can only post to its one endpoint. The internal server is listed separately, flagged for a human to review. Everything else is denied.","expect":["network_policies"]}]}

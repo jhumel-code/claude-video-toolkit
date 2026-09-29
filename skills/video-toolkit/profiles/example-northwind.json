@@ -22,5 +22,24 @@
     "colorbalance": "rs=0.05:rh=0.03"
   },
   "voice": "en-US-AvaNeural",
-  "pronounce": {}
+  "rate": "+0%",
+  "pronounce": {},
+  "terminal": {
+    "width": 2560,
+    "height": 1440,
+    "font_size": 28,
+    "padding": 30,
+    "margin": 40,
+    "margin_fill": "#0C0905",
+    "border_radius": 12,
+    "window_bar": "Colorful",
+    "typing_speed": "35ms",
+    "theme": {
+      "background": "#16110A", "foreground": "#FAF8F4", "cursor": "#E9A142", "selection": "#3A2A14",
+      "black": "#0C0905", "brightBlack": "#5A4A34", "red": "#FF6B5C", "brightRed": "#FF8B7C",
+      "green": "#8FD13F", "brightGreen": "#A8E05F", "yellow": "#E9A142", "brightYellow": "#FFD496",
+      "blue": "#6FA8E8", "brightBlue": "#8FC0F5", "magenta": "#D08BD8", "brightMagenta": "#E0A8E6",
+      "cyan": "#6CC4B8", "brightCyan": "#8ED8CE", "white": "#FAF8F4", "brightWhite": "#FFFFFF"
+    }
+  }
 }

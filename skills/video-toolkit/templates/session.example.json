@@ -1,0 +1,22 @@
+{
+ "name": "session-demo",
+ "footage": "plugin-demo/full.mp4",
+ "outdir": "out",
+ "gap": 0.35,
+ "scenes": [
+  {"t": "This is Claude Code, and it just wrote an A-I agent: an on-call assistant, with tools that call out to check service status and open incidents. The code runs. But agent code fails in ways an ordinary linter never sees. So before it's committed, we let Claude Code audit its own work, with the Trustabl plugin.",
+   "mode": "speed", "in": 13, "out": 33},
+  {"t": "One request kicks off the trustabl-scan skill. It runs a full static analysis right inside the session, with no C-I and no context switch, modeling every tool the agent declares and checking each one against a security and reliability rule catalog.",
+   "mode": "speed", "in": 33, "out": 44},
+  {"t": "Twelve findings, and a starting score of just zero point seven one. Two are high severity: both network calls have no timeout, so a single hung dependency could stall the entire agent. The rest flag untyped parameters, missing docstrings, no failure handler, and tracing left on by default. Each one ships with the reason it matters and the exact fix.",
+   "mode": "freeze", "at": 47, "expect": ["findings"]},
+  {"t": "Now the other half of the plugin: trustabl-enrich. It takes those findings and applies them straight to the source, adding timeouts, typing the parameters, writing docstrings and a failure handler, and a guidance doc for the project. It doesn't improvise; it follows the scanner's own fix guidance, finding by finding.",
+   "mode": "speed", "in": 55, "out": 96},
+  {"t": "Then it re-scans, to check its own work, and this is the part that matters. The score jumps to zero point nine seven, but one finding still remains. So it fixes that one too, and scans again. It doesn't stop at good enough.",
+   "mode": "speed", "in": 96, "out": 168},
+  {"t": "Zero actionable findings. A clean one point zero, up from zero point seven one. Every issue closed before a single line of code was committed.",
+   "mode": "freeze", "at": 205},
+  {"t": "That's the Trustabl plugin for Claude Code: your agent code, audited and hardened the moment it's written, by the same assistant that wrote it. Add it from the marketplace, and ship agents you can trust.",
+   "mode": "freeze", "at": 205}
+ ]
+}

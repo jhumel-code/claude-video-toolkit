@@ -22,5 +22,25 @@
     "colorbalance": "bs=0.04:bh=0.02"
   },
   "voice": "en-US-AvaNeural",
-  "pronounce": { "Trustabl": "Trustable" }
+  "rate": "-7%",
+  "pronounce": { "Trustabl": "Trustable" },
+  "intro_clip": "assets/trustabl-intro.mp4",
+  "terminal": {
+    "width": 2560,
+    "height": 1440,
+    "font_size": 28,
+    "padding": 30,
+    "margin": 40,
+    "margin_fill": "#070E1A",
+    "border_radius": 12,
+    "window_bar": "Colorful",
+    "typing_speed": "35ms",
+    "theme": {
+      "background": "#0D1B2A", "foreground": "#E8EBF0", "cursor": "#51C1B5", "selection": "#16283F",
+      "black": "#0A1626", "brightBlack": "#4A5A70", "red": "#FF6B5C", "brightRed": "#FF8B7C",
+      "green": "#8FD13F", "brightGreen": "#A8E05F", "yellow": "#E0C066", "brightYellow": "#F0D486",
+      "blue": "#6FA8E8", "brightBlue": "#8FC0F5", "magenta": "#B48EE8", "brightMagenta": "#C9A8F5",
+      "cyan": "#51C1B5", "brightCyan": "#7FE0D4", "white": "#E8EBF0", "brightWhite": "#FFFFFF"
+    }
+  }
 }
