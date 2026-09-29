@@ -1,5 +1,5 @@
 [
-  {"tape":"tb03.tape","out":"f03-agentscan","beats":[
+  {"tape":"tb03.tape","out":"f03-agentscan","cwd":"/home/demo/demo","setup":"source ./demo-env.sh","beats":[
     ["./trustabl scan claude-sdk-examples 2>/dev/null | sed -n '/Scan summary/,/^Findings/p'", 13],
     ["./trustabl scan claude-sdk-examples 2>/dev/null | grep -E 'HIGH|CRIT'", 12]]},
   {"tape":"tb04.tape","out":"f04-acac","beats":[
